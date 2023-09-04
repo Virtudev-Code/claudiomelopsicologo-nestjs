@@ -8,6 +8,7 @@ import {
   OneToOne,
 } from 'typeorm';
 import Consulta from './Consulta.entities';
+import { v4 as uuid } from 'uuid';
 
 @Entity({ name: 'transacao' })
 class Transacao {
@@ -32,6 +33,12 @@ class Transacao {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  constructor() {
+    if (!this.id) {
+      this.id = uuid(); // Gera um novo UUID ao criar uma instância de User
+    }
+  }
 }
 
 export default Transacao;

@@ -5,6 +5,7 @@ import {
   Generated,
   CreateDateColumn,
 } from 'typeorm';
+import { v4 as uuid } from 'uuid';
 
 @Entity({ name: 'security_token' })
 class SecurityToken {
@@ -20,6 +21,12 @@ class SecurityToken {
 
   @CreateDateColumn()
   created_at: Date;
+
+  constructor() {
+    if (!this.id) {
+      this.id = uuid(); // Gera um novo UUID ao criar uma instância de User
+    }
+  }
 }
 
 export default SecurityToken;
