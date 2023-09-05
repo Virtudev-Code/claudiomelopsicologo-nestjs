@@ -6,6 +6,8 @@ import {
   UploadedFiles,
   UseGuards,
   Get,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import {
@@ -20,9 +22,9 @@ import { ConsultaService } from 'src/service/consulta.service';
 import { createConsultaSwagger } from 'src/common/doc/createConsultaSwagger';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { RolesGuard } from 'src/common/guards/auth.guard';
+import * as ExcelJS from 'exceljs';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { Role } from 'src/common/enum/enum';
-import * as ExcelJS from 'exceljs';
 
 @ApiTags(Routes.CONSULTA)
 @Controller(Routes.CONSULTA)
@@ -30,6 +32,9 @@ import * as ExcelJS from 'exceljs';
 export class ConsultaController {
   constructor(private readonly consultaService: ConsultaService) {}
 
+  @UsePipes(ValidationPipe)
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Post('upload')
   @Bind(UploadedFiles())
   @ApiBody({ type: createConsultaSwagger })
@@ -51,11 +56,12 @@ export class ConsultaController {
       if (rowNumber !== 1) {
         const consulta = {
           data: row.getCell(1).toString(),
-          paciente: row.getCell(2).toString(),
+          patient_name: row.getCell(2).toString(),
           servicos: row.getCell(3).toString(),
           convenio: row.getCell(4).toString(),
           preco: row.getCell(5).toString(),
-          estado: row.getCell(6).toString(),
+          estado: row.getCell(7).toString(),
+          comentarios: row.getCell(8).toString(),
           situacaoDoPagamento: false,
         };
         consultasImportadas.push(consulta);
@@ -102,13 +108,3 @@ export class ConsultaController {
     return this.consultaService.findAllUnPaidAppointment();
   }
 }
-
-// Encontrar agendamentos pelo dia e mês.
-// Encontrar uma consulta pelo id.
-// Editar uma consulta pelo id, antes dela acontecer, 6h
-// Envio de email na edição dos usuários
-
-// Dashboard Financeiro
-// Excel dados novos
-
-// Pagamento no Pix e Boleto.

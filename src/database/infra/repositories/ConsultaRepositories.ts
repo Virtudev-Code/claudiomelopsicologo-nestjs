@@ -33,15 +33,15 @@ export class ConsultaRepository implements IConsultaRepository {
     for (const consultaData of consultasData) {
       const { patient_name, ...consultaInfo } = consultaData;
 
-      const user = await this.userRepository.findOne({
+      let user = await this.userRepository.findOne({
         where: { name: patient_name },
       });
 
       if (!user) {
-        const newUser = new Patient();
-        newUser.name = patient_name;
-        newUser.role = Role.PATIENT;
-        await this.userRepository.save(newUser);
+        user = new Patient();
+        user.name = patient_name;
+        user.role = Role.PATIENT;
+        await this.userRepository.save(user);
       }
 
       const consulta = new Consulta();
