@@ -55,7 +55,7 @@ export class ConsultaController {
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber !== 1) {
         const consulta = {
-          data: row.getCell(1).toString(),
+          date: row.getCell(1).toString(),
           patient_name: row.getCell(2).toString(),
           servicos: row.getCell(3).toString(),
           convenio: row.getCell(4).toString(),

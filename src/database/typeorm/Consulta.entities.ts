@@ -18,8 +18,8 @@ class Consulta {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('timestamp', { nullable: true })
-  date: Date;
+  @Column({ nullable: true })
+  date: string;
 
   @ManyToOne(() => Patient)
   @JoinColumn({ name: 'patient_name' })
