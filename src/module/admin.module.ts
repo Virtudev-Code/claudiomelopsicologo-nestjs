@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AdminRepository } from 'src/database/infra/repositories/AdminRepositories';
 import { AdminService } from 'src/service/admin.service';
 import { AuthModule } from './auth.module';
-import { AdminController } from 'src/http/admin.http';
+import { AdminController } from 'src/http/AdminController';
 import { TypeOrmFeaturedModule } from './typeorm.module';
 
 @Module({

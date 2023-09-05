@@ -6,9 +6,9 @@ export class createConsultaSwagger {
   @IsNotEmpty()
   @ApiProperty({
     description: 'Data da consulta',
-    example: '17/08/2023',
+    example: '2023-06-13T22:00:00',
   })
-  data: string;
+  data: Date;
 
   @IsString()
   @IsNotEmpty()

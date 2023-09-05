@@ -2,6 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { ConsultaRepository } from 'src/database/infra/repositories/ConsultaRepositories';
 import { createConsultaSwagger } from 'src/common/doc/createConsultaSwagger';
 import Consulta from 'src/database/typeorm/Consulta.entities';
+import {
+  IRequestMonth,
+  IRequestMonthPatient,
+  IRequestDayPatient,
+} from 'src/common/types/types';
 
 @Injectable()
 export class ConsultaService {
@@ -22,5 +27,41 @@ export class ConsultaService {
 
   async findAllAppointment(): Promise<Consulta[]> {
     return await this.consultaRepository.findAllAppointment();
+  }
+
+  async getAllAppointmentforMonth({
+    month,
+    year,
+  }: IRequestMonth): Promise<Consulta[]> {
+    return await this.consultaRepository.getAllAppointmentforMonth({
+      month,
+      year,
+    });
+  }
+
+  async getAppointmentforPatientMonth({
+    patient_name,
+    month,
+    year,
+  }: IRequestMonthPatient): Promise<Consulta[]> {
+    return await this.consultaRepository.getAppointmentforPatientMonth({
+      patient_name,
+      month,
+      year,
+    });
+  }
+
+  async getAppointmentforPatientDay({
+    patient_name,
+    month,
+    year,
+    day,
+  }: IRequestDayPatient): Promise<Consulta[]> {
+    return await this.consultaRepository.getAppointmentforPatientDay({
+      patient_name,
+      month,
+      year,
+      day,
+    });
   }
 }

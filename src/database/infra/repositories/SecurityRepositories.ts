@@ -57,6 +57,7 @@ export class SecurityTokenRepository {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     user.password = hashedPassword;
+    user.is_first_time = false;
 
     await this.userRepository.save(user);
 

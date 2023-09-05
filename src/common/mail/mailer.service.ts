@@ -16,6 +16,22 @@ export class MailService {
     SendGrid.setApiKey(this.configService.get<string>('SEND_GRID_KEY'));
   }
 
+  async updateEmailByAdmin(name: string, email: string) {
+    const templatePath = path.join(__dirname, 'templates/updated-email.hbs');
+    const templateSource = fs.readFileSync(templatePath, 'utf8');
+    const template = handlebars.compile(templateSource);
+    const html = template({ name, email });
+
+    const msg = {
+      to: email,
+      from: `"No Reply" <${process.env.MAIL_FROM}>`,
+      subject: 'Psicólogo - Dados de acesso',
+      html,
+    };
+
+    await SendGrid.send(msg);
+  }
+
   async sendRecoverPassord(name: string, email: string, token: string) {
     const templatePath = path.join(__dirname, 'templates/recover-password.hbs');
     const templateSource = fs.readFileSync(templatePath, 'utf8');

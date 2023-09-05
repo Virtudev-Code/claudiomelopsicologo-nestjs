@@ -4,6 +4,7 @@ import {
   Bind,
   UseInterceptors,
   UploadedFiles,
+  Param,
   UseGuards,
   Get,
   UsePipes,
@@ -25,6 +26,7 @@ import { RolesGuard } from 'src/common/guards/auth.guard';
 import * as ExcelJS from 'exceljs';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { Role } from 'src/common/enum/enum';
+import { parse } from 'date-fns';
 
 @ApiTags(Routes.CONSULTA)
 @Controller(Routes.CONSULTA)
@@ -55,7 +57,7 @@ export class ConsultaController {
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber !== 1) {
         const consulta = {
-          date: row.getCell(1).toString(),
+          date: parse(row.getCell(1).toString(), 'dd/MM/yyyy', new Date()),
           patient_name: row.getCell(2).toString(),
           servicos: row.getCell(3).toString(),
           convenio: row.getCell(4).toString(),
@@ -106,5 +108,59 @@ export class ConsultaController {
   })
   async findAllUnPaidAppointment() {
     return this.consultaService.findAllUnPaidAppointment();
+  }
+
+  @Get('all/appointment-month/:year/:month')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({
+    summary: 'Retorna todas as consultas não pagas.',
+  })
+  async getAllAppointmentforMonth(
+    @Param('year') year: number,
+    @Param('month') month: number,
+  ) {
+    return this.consultaService.getAllAppointmentforMonth({
+      month,
+      year,
+    });
+  }
+
+  @Get(':patient_id/day-appointment-patient/:year/:month')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({
+    summary: 'Retorna todas as consultas não pagas.',
+  })
+  async getAppointmentforPatientMonth(
+    @Param('patient_name') patient_name: string,
+    @Param('year') year: number,
+    @Param('month') month: number,
+  ) {
+    return this.consultaService.getAppointmentforPatientMonth({
+      patient_name,
+      month,
+      year,
+    });
+  }
+
+  @Get(':patient_name/day-appointment-patient/:year/:month/:day')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({
+    summary: 'Retorna todas as consultas não pagas.',
+  })
+  async getAppointmentforPatientDay(
+    @Param('patient_name') patient_name: string,
+    @Param('year') year: number,
+    @Param('month') month: number,
+    @Param('day') day: number,
+  ) {
+    return this.consultaService.getAppointmentforPatientDay({
+      patient_name,
+      day,
+      month,
+      year,
+    });
   }
 }

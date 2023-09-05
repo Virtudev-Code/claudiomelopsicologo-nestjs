@@ -3,6 +3,7 @@ import { createPatientSwagger } from 'src/common/doc/createPatientSwagger';
 import Patient from 'src/database/typeorm/Patient.entities';
 import { AdminRepository } from 'src/database/infra/repositories/AdminRepositories';
 import { updatePatientSwagger } from 'src/common/doc/updatePatientSwagger';
+import { UpdateUser } from 'src/common/types/types';
 
 @Injectable()
 export class AdminService {
@@ -35,6 +36,20 @@ export class AdminService {
 
   public async getPatientWithoutEmail(): Promise<Patient[]> {
     return await this.adminRepository.getPatientWithoutEmail();
+  }
+
+  public async updatePatientWithoutEmail({
+    id,
+    patient,
+  }: UpdateUser): Promise<Patient> {
+    if (!patient.email) {
+      throw new BadRequestException('User email do not exist');
+    }
+
+    return await this.adminRepository.updatePatientWithoutEmail({
+      id,
+      patient,
+    });
   }
 
   public async getAllPatients(): Promise<Patient[]> {

@@ -5,6 +5,8 @@ import { createPatientSwagger } from 'src/common/doc/createPatientSwagger';
 import { AuthRepository } from './AuthRepositories';
 import Patient from 'src/database/typeorm/Patient.entities';
 import { Role } from 'src/common/enum/enum';
+import { MailService } from 'src/common/mail/mailer.service';
+import { UpdateUser } from 'src/common/types/types';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -13,6 +15,7 @@ export class AdminRepository {
     @InjectRepository(Patient)
     private readonly adminRepository: Repository<Patient>,
     private readonly authRepository: AuthRepository,
+    private readonly mailerService: MailService,
   ) {}
 
   public async createPatient(data: createPatientSwagger): Promise<Patient> {
@@ -78,5 +81,24 @@ export class AdminRepository {
         email: null,
       },
     });
+  }
+
+  public async updatePatientWithoutEmail({
+    id,
+    patient,
+  }: UpdateUser): Promise<Patient> {
+    const user = await this.adminRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    Object.assign(user, patient);
+
+    const updatedPatient = await this.adminRepository.save(user);
+
+    await this.mailerService.updateEmailByAdmin(user.name, user.email);
+
+    return updatedPatient;
   }
 }
