@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { Routes } from 'src/common/constant/constants';
 
 @ApiTags(Routes.STATUS)
-@Controller()
+@Controller(Routes.STATUS)
 export class AppController {
   constructor(private readonly appService: AppService) {}
 

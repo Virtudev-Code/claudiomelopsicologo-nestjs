@@ -4,6 +4,11 @@ import { updatePatientSwagger } from 'src/common/doc/updatePatientSwagger';
 import Patient from 'src/database/typeorm/Patient.entities';
 import { PatientRepository } from 'src/database/infra/repositories/PatientRepositories';
 import Consulta from 'src/database/typeorm/Consulta.entities';
+import {
+  IRequestDayPatient,
+  IRequestMonth,
+  IRequestMonthPatient,
+} from 'src/common/types/types';
 
 @Injectable()
 export class PatientService {
@@ -53,5 +58,41 @@ export class PatientService {
     data: updatePatientSwagger,
   ): Promise<Patient> {
     return await this.patientRepository.updatePatient(id, data);
+  }
+
+  async getAllAppointmentforMonth({
+    month,
+    year,
+  }: IRequestMonth): Promise<Consulta[]> {
+    return await this.patientRepository.getAllAppointmentforMonth({
+      month,
+      year,
+    });
+  }
+
+  async getAppointmentforPatientMonth({
+    patient_name,
+    month,
+    year,
+  }: IRequestMonthPatient): Promise<Consulta[]> {
+    return await this.patientRepository.getAppointmentforPatientMonth({
+      patient_name,
+      month,
+      year,
+    });
+  }
+
+  async getAppointmentforPatientDay({
+    patient_name,
+    month,
+    year,
+    day,
+  }: IRequestDayPatient): Promise<Consulta[]> {
+    return await this.patientRepository.getAppointmentforPatientDay({
+      patient_name,
+      month,
+      year,
+      day,
+    });
   }
 }

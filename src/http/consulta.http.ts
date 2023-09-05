@@ -26,6 +26,7 @@ import { RolesGuard } from 'src/common/guards/auth.guard';
 import * as ExcelJS from 'exceljs';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { Role } from 'src/common/enum/enum';
+
 import { parse } from 'date-fns';
 
 @ApiTags(Routes.CONSULTA)
@@ -114,7 +115,7 @@ export class ConsultaController {
   @UseGuards(AccessTokenGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({
-    summary: 'Retorna todas as consultas não pagas.',
+    summary: 'Retorna todas as consultas do mês.',
   })
   async getAllAppointmentforMonth(
     @Param('year') year: number,
@@ -130,7 +131,7 @@ export class ConsultaController {
   @UseGuards(AccessTokenGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({
-    summary: 'Retorna todas as consultas não pagas.',
+    summary: 'Retorna todas as consultas do mês de um paciente.',
   })
   async getAppointmentforPatientMonth(
     @Param('patient_name') patient_name: string,
@@ -148,7 +149,7 @@ export class ConsultaController {
   @UseGuards(AccessTokenGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({
-    summary: 'Retorna todas as consultas não pagas.',
+    summary: 'Retorna todas as consultas do dia de um paciente',
   })
   async getAppointmentforPatientDay(
     @Param('patient_name') patient_name: string,

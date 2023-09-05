@@ -76,4 +76,62 @@ export class PatientController {
   ): Promise<Consulta> {
     return await this.patientService.findAppointmentById(id, patient.id);
   }
+
+  @Get('all/appointment-month/:year/:month')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.PATIENT)
+  @ApiOperation({
+    summary: 'Retorna todas as consultas do mês.',
+  })
+  async getAllAppointmentforMonth(
+    @Param('year') year: number,
+    @Param('month') month: number,
+  ) {
+    return this.patientService.getAllAppointmentforMonth({
+      month,
+      year,
+    });
+  }
+
+  @Get('month-appointment-patient/:year/:month')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.PATIENT)
+  @ApiOperation({
+    summary: 'Retorna todas as consultas do mês de um paciente.',
+  })
+  async getAppointmentforPatientMonth(
+    @LoggedUser() patient: Patient,
+    @Param('year') year: number,
+    @Param('month') month: number,
+  ) {
+    const patient_name = patient.name;
+
+    return this.patientService.getAppointmentforPatientMonth({
+      patient_name,
+      month,
+      year,
+    });
+  }
+
+  @Get('day-appointment-patient/:year/:month/:day')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.PATIENT)
+  @ApiOperation({
+    summary: 'Retorna todas as consultas do dia de um paciente',
+  })
+  async getAppointmentforPatientDay(
+    @LoggedUser() patient: Patient,
+    @Param('year') year: number,
+    @Param('month') month: number,
+    @Param('day') day: number,
+  ) {
+    const patient_name = patient.name;
+
+    return this.patientService.getAppointmentforPatientDay({
+      patient_name,
+      day,
+      month,
+      year,
+    });
+  }
 }

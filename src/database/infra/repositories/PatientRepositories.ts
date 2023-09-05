@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createPatientSwagger } from 'src/common/doc/createPatientSwagger';
@@ -8,6 +8,12 @@ import { Role } from 'src/common/enum/enum';
 import Patient from 'src/database/typeorm/Patient.entities';
 import * as bcrypt from 'bcrypt';
 import Consulta from 'src/database/typeorm/Consulta.entities';
+import {
+  IRequestDayPatient,
+  IRequestMonth,
+  IRequestMonthPatient,
+} from 'src/common/types/types';
+import { endOfDay, startOfDay } from 'date-fns';
 
 @Injectable()
 export class PatientRepository {
@@ -129,6 +135,58 @@ export class PatientRepository {
           id: patient_id,
         },
       },
+    });
+  }
+
+  public async getAllAppointmentforMonth({
+    month,
+    year,
+  }: IRequestMonth): Promise<Consulta[]> {
+    // Primeiro dia do mês
+    const startDate = new Date(year, month - 1, 1);
+    // Último dia do mês
+    const endDate = new Date(year, month, 0);
+
+    return await this.consultaRepository.find({
+      where: {
+        date: Between(startDate, endDate),
+      },
+    });
+  }
+
+  public async getAppointmentforPatientMonth({
+    patient_name,
+    month,
+    year,
+  }: IRequestMonthPatient): Promise<Consulta[]> {
+    // Primeiro dia do mês
+    const startDate = new Date(year, month - 1, 1);
+    // Último dia do mês
+    const endDate = new Date(year, month, 0);
+
+    return await this.consultaRepository.find({
+      where: {
+        patient_name,
+        date: Between(startDate, endDate),
+      },
+    });
+  }
+
+  public async getAppointmentforPatientDay({
+    patient_name,
+    month,
+    year,
+    day,
+  }: IRequestDayPatient): Promise<Consulta[]> {
+    const startDate = startOfDay(new Date(year, month - 1, day));
+    const endDate = endOfDay(new Date(year, month - 1, day));
+
+    return await this.consultaRepository.find({
+      where: {
+        patient_name,
+        date: Between(startDate, endDate),
+      },
+      relations: ['patient'],
     });
   }
 }
