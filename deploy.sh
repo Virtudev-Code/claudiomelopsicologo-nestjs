@@ -10,6 +10,6 @@ npm install
 
 npm run build
 
-pm2 delete back-nestjs
+pm2 delete claudiomelopsicologo-nestjs
 
 pm2 start dist/main.js --name "claudiomelopsicologo-nestjs"
