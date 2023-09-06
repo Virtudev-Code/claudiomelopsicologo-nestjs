@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /home/ubuntu/repositories/back-nestjs
+cd /home/ubuntu/repositories/claudiomelopsicologo-nestjs
 
 git pull origin main
 
