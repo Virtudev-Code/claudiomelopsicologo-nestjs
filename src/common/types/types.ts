@@ -1,6 +1,9 @@
+// import Patient from 'src/database/typeorm/Patient.entities';
+import { updateEmailSwagger } from '../doc/updatePatientSwagger';
+
 export type UpdateUser = {
   id: string;
-  patient: any;
+  patient: updateEmailSwagger;
 };
 
 export type Token = {

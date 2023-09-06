@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -33,4 +34,20 @@ export class updatePatientSwagger {
     example: 'User',
   })
   phoneNumber: string;
+}
+
+export class updateEmailSwagger {
+  @IsEmail()
+  @ApiProperty({
+    description: 'Nome do usuário.',
+    example: 'User',
+  })
+  email: string;
+
+  @IsBoolean()
+  @ApiProperty({
+    description: 'Ativo.',
+    example: true,
+  })
+  active: true;
 }

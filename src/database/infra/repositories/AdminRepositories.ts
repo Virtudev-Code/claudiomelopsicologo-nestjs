@@ -18,6 +18,35 @@ export class AdminRepository {
     private readonly mailerService: MailService,
   ) {}
 
+  public async createAdmin(data: createPatientSwagger): Promise<Patient> {
+    const hashPassword = await bcrypt.hash(data.password, 10);
+
+    const patient = new Patient();
+
+    patient.name = data.name;
+    patient.email = data.email;
+    patient.refresh_token = '';
+    patient.role = Role.ADMIN;
+    patient.password = hashPassword;
+    patient.active = true;
+    patient.is_first_time = false;
+    patient.accepted = true;
+
+    const newPatient = await this.adminRepository.save(patient);
+
+    const tokens = await this.authRepository.getTokens(
+      newPatient.id,
+      newPatient.name,
+    );
+
+    await this.authRepository.updateRefreshToken(
+      newPatient.id,
+      tokens.refreshToken,
+    );
+
+    return newPatient;
+  }
+
   public async createPatient(data: createPatientSwagger): Promise<Patient> {
     const hashPassword = await bcrypt.hash(data.password, 10);
 

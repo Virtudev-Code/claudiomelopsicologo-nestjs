@@ -38,7 +38,7 @@ class Patient {
   @Column({ nullable: true })
   password: string;
 
-  @Column({ default: true })
+  @Column({ default: false })
   active: boolean;
 
   @Column({ default: false })

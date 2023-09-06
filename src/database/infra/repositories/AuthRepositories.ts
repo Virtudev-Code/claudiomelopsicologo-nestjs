@@ -34,7 +34,7 @@ export class AuthRepository implements IAuthRepository {
     }
 
     // Verifica se a conta do usuário está bloqueada
-    if (user.active) {
+    if (user.active === false) {
       throw new UnauthorizedException(
         'Sua conta está desativada. Entre em contato com o administrador.',
       );
@@ -48,6 +48,7 @@ export class AuthRepository implements IAuthRepository {
     }
 
     // Login bem-sucedido, redefine o número de tentativas de login malsucedidas para 0
+    user.accepted = true;
     await this.authRepository.save(user);
 
     const token = await this.getTokens(user.id, user.email);

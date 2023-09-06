@@ -4,6 +4,7 @@ import Patient from 'src/database/typeorm/Patient.entities';
 import { AdminRepository } from 'src/database/infra/repositories/AdminRepositories';
 import { updatePatientSwagger } from 'src/common/doc/updatePatientSwagger';
 import { UpdateUser } from 'src/common/types/types';
+import { createAdminSwagger } from 'src/common/doc/createAdminSwagger';
 
 @Injectable()
 export class AdminService {
@@ -23,6 +24,23 @@ export class AdminService {
     }
 
     const user = await this.adminRepository.createPatient(data);
+    return user;
+  }
+
+  public async createAdmin(data: createAdminSwagger): Promise<Patient> {
+    if (data.password !== data.confirmPassword) {
+      throw new BadRequestException('As senhas informadas não são iguais.');
+    }
+
+    const verifyUserExist = await this.adminRepository.findPatientByEmail(
+      data.email,
+    );
+
+    if (verifyUserExist) {
+      throw new BadRequestException('Este usuário já existe.');
+    }
+
+    const user = await this.adminRepository.createAdmin(data);
     return user;
   }
 

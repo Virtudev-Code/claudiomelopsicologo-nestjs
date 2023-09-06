@@ -12,6 +12,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Routes } from 'src/common/constant/constants';
 import { Roles } from 'src/common/decorators/role.decorator';
+import { createAdminSwagger } from 'src/common/doc/createAdminSwagger';
 import { createPatientSwagger } from 'src/common/doc/createPatientSwagger';
 import { updatePatientSwagger } from 'src/common/doc/updatePatientSwagger';
 import { Role } from 'src/common/enum/enum';
@@ -25,6 +26,15 @@ import { AdminService } from 'src/service/admin.service';
 @ApiBearerAuth()
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
+
+  @UsePipes(ValidationPipe)
+  @Post('/creat-admin')
+  @ApiOperation({
+    summary: 'Cria um Paciente através do Admin Autenticado',
+  })
+  async createAdmin(@Body() data: createAdminSwagger): Promise<Patient> {
+    return await this.adminService.createAdmin(data);
+  }
 
   @UsePipes(ValidationPipe)
   @UseGuards(AccessTokenGuard, RolesGuard)
