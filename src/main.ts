@@ -78,7 +78,7 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   try {
-    await app.listen(3334, () => {
+    await app.listen(process.env.PORT, () => {
       console.log(`\n 🚀 Server is running on!  ${process.env.BASE_URL}/docs`);
     });
   } catch (err) {
