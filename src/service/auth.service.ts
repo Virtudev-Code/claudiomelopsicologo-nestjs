@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { loginSwagger } from 'src/common/doc/loginSwagger';
 import { loginResponseSwagger } from 'src/common/doc/loginResponseSwagger';
 import { AuthRepository } from 'src/database/infra/repositories/AuthRepositories';
+import { Role } from 'src/common/enum/enum';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,7 @@ export class AuthService {
     return this.authRepository.updateRefreshToken(id, refreshToken);
   }
 
-  async getTokens(id: string, email: string) {
-    return this.authRepository.getTokens(id, email);
+  async getTokens(id: string, email: string, role: Role) {
+    return this.authRepository.getTokens(id, email, role);
   }
 }

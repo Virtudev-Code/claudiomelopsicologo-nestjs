@@ -44,6 +44,7 @@ export class PatientRepository {
     const tokens = await this.authRepository.getTokens(
       savedPatient.id,
       savedPatient.name,
+      savedPatient.role,
     );
 
     await this.authRepository.updateRefreshToken(

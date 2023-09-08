@@ -37,6 +37,7 @@ export class AdminRepository {
     const tokens = await this.authRepository.getTokens(
       newPatient.id,
       newPatient.name,
+      newPatient.role,
     );
 
     await this.authRepository.updateRefreshToken(
@@ -64,6 +65,7 @@ export class AdminRepository {
     const tokens = await this.authRepository.getTokens(
       newPatient.id,
       newPatient.name,
+      newPatient.role,
     );
 
     await this.authRepository.updateRefreshToken(
