@@ -39,7 +39,7 @@ export class ConsultaRepository implements IConsultaRepository {
     }
 
     for (const consultaData of consultasData) {
-      const { patient_name, data, ...consultaInfo } = consultaData;
+      const { patient_name, ...consultaInfo } = consultaData;
 
       let user = await this.userRepository.findOne({
         where: { name: patient_name },
@@ -58,7 +58,6 @@ export class ConsultaRepository implements IConsultaRepository {
       const consulta = new Consulta();
       consulta.patient = user;
       consulta.patient_name = patient_name;
-      consulta.date = data;
       Object.assign(consulta, consultaInfo);
 
       const createdConsulta = await this.consultaRepository.save(consulta);

@@ -57,14 +57,20 @@ export class ConsultaController {
 
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber !== 1) {
+        const dateCell = row.getCell('A');
+        const date =
+          dateCell && dateCell.value
+            ? parse(dateCell.toString(), 'dd/MM/yyyy', new Date())
+            : null;
+
         const consulta = {
-          date: parse(row.getCell(1).toString(), 'dd/MM/yyyy', new Date()),
-          patient_name: row.getCell(2).toString(),
-          servicos: row.getCell(3).toString(),
-          convenio: row.getCell(4).toString(),
-          preco: row.getCell(5).toString(),
-          estado: row.getCell(7).toString(),
-          comentarios: row.getCell(8).toString(),
+          date,
+          patient_name: row.getCell('B').toString(),
+          servicos: row.getCell('C').toString(),
+          convenio: row.getCell('D').toString(),
+          preco: row.getCell('E').toString(),
+          estado: row.getCell('F').toString(),
+          comentarios: row.getCell('G').toString(),
           situacaoDoPagamento: false,
         };
         consultasImportadas.push(consulta);
