@@ -25,7 +25,7 @@ export class AdminRepository {
 
     patient.name = data.name;
     patient.email = data.email;
-    patient.refresh_token = '';
+    patient.refreshToken = '';
     patient.role = Role.ADMIN;
     patient.password = hashPassword;
     patient.active = true;
@@ -55,7 +55,7 @@ export class AdminRepository {
 
     patient.name = data.name;
     patient.email = data.email;
-    patient.refresh_token = '';
+    patient.refreshToken = '';
     patient.role = Role.PATIENT;
     patient.password = hashPassword;
     patient.active = true;

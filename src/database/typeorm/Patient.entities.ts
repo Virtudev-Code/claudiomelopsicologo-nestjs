@@ -30,7 +30,7 @@ class Patient {
 
   @Exclude()
   @Column({ nullable: true })
-  refresh_token: string;
+  refreshToken: string;
 
   @Column({ nullable: true })
   is_first_time: boolean;

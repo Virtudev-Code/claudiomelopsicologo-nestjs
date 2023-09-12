@@ -44,6 +44,7 @@ export class AuthController {
     return user;
   }
 
+  @Throttle(1000, 60) // Permite no máximo 100- solicitações a cada 60 segundos
   @UseGuards(RefreshTokenGuard)
   @Get('refresh')
   @ApiOperation({
@@ -51,7 +52,7 @@ export class AuthController {
   })
   @ApiBearerAuth()
   refreshTokens(@LoggedUser() user: Patient) {
-    return this.authService.refreshTokens(user.id, user.refresh_token);
+    return this.authService.refreshTokens(user.id, user.refreshToken);
   }
 
   @UseGuards(AccessTokenGuard)

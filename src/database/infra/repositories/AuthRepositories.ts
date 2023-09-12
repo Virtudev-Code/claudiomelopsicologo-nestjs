@@ -6,7 +6,6 @@ import { ConfigService } from '@nestjs/config';
 import Patient from 'src/database/typeorm/Patient.entities';
 import { loginSwagger } from 'src/common/doc/loginSwagger';
 import { loginResponseSwagger } from 'src/common/doc/loginResponseSwagger';
-import IAuthRepository from '../interfaces/IAuthRepository';
 import { Token } from 'src/common/types/types';
 import * as bcrypt from 'bcrypt';
 import * as argon2 from 'argon2';
@@ -70,7 +69,7 @@ export class AuthRepository {
       },
     });
     if (user) {
-      user.refresh_token = null;
+      user.refreshToken = null;
       await this.authRepository.save(user);
     }
   }
@@ -82,12 +81,11 @@ export class AuthRepository {
       },
     });
 
-    if (!user || !user.refresh_token) {
+    if (!user || !user.refreshToken) {
       throw new UnauthorizedException('Access Denied');
     }
-    console.log(user.refresh_token);
     const refreshTokenMatches = await argon2.verify(
-      user.refresh_token,
+      user.refreshToken,
       refreshToken,
     );
 
@@ -109,7 +107,7 @@ export class AuthRepository {
     });
     const hashedRefreshToken = await argon2.hash(refreshToken);
     if (user) {
-      user.refresh_token = hashedRefreshToken;
+      user.refreshToken = hashedRefreshToken;
       await this.authRepository.save(user);
     }
   }

@@ -50,13 +50,7 @@ async function bootstrap() {
     .addTag(Routes.PAYMENT)
     .addTag(Routes.PATIENT)
     .addTag(Routes.CONSULTA)
-    .addBasicAuth()
-    .addBearerAuth({
-      name: 'Bearer Token',
-      type: 'http',
-      description: 'Access Token: Insira o Token recebido ao fazer Login',
-      in: 'header',
-    })
+    .addBearerAuth()
     .setTitle('API - Financeiro Psicólogo')
     .setDescription('Website Financeiro Médico')
     .setTermsOfService('https://www.google.com')
@@ -70,7 +64,6 @@ async function bootstrap() {
       'https://github.com/git/git-scm.com/blob/main/MIT-LICENSE.txt',
     )
     .setVersion('1.0.0')
-    //.addServer('https://api.example.com', 'Servidor de Produção')
     .build();
 
   const document = SwaggerModule.createDocument(app, init);

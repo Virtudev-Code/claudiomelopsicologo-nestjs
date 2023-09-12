@@ -16,8 +16,8 @@ export class AuthService {
     return this.authRepository.logout(id);
   }
 
-  async refreshTokens(id: string, refreshToken: string) {
-    return this.authRepository.refreshTokens(id, refreshToken);
+  async refreshTokens(id: string, refresh_token: string) {
+    return this.authRepository.refreshTokens(id, refresh_token);
   }
 
   async updateRefreshToken(id: string, refreshToken: string) {
