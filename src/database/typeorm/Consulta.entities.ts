@@ -21,7 +21,7 @@ class Consulta {
   @Column('timestamp', { nullable: true })
   date: Date;
 
-  @ManyToOne(() => Patient)
+  @ManyToOne(() => Patient, { eager: true })
   @JoinColumn({ name: 'patient_name' })
   patient: Patient;
 

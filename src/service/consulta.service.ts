@@ -7,6 +7,7 @@ import {
   IRequestMonthPatient,
   IRequestDayPatient,
 } from 'src/common/types/types';
+import Patient from 'src/database/typeorm/Patient.entities';
 
 @Injectable()
 export class ConsultaService {
@@ -15,6 +16,10 @@ export class ConsultaService {
   async createConsultas(data: createConsultaSwagger[]): Promise<Consulta[]> {
     const consulta = await this.consultaRepository.createConsultas(data);
     return consulta;
+  }
+
+  async findOne(patient_name: string): Promise<Patient> {
+    return await this.consultaRepository.findOne(patient_name);
   }
 
   async findAllPaidAppointment(): Promise<Consulta[]> {

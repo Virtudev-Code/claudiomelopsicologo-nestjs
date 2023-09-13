@@ -27,8 +27,13 @@ import { RolesGuard } from 'src/common/guards/auth.guard';
 import * as ExcelJS from 'exceljs';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { Role } from 'src/common/enum/enum';
-
+import { isBefore } from 'date-fns';
 import { parse } from 'date-fns';
+import Patient from 'src/database/typeorm/Patient.entities';
+import Consulta from 'src/database/typeorm/Consulta.entities';
+import { handleError } from 'src/shared/error/handle-error.util';
+import { v4 as uuid } from 'uuid';
+import * as bcrypt from 'bcrypt';
 
 @ApiTags(Routes.CONSULTA)
 @Controller(Routes.CONSULTA)
@@ -86,6 +91,85 @@ export class ConsultaController {
       createdConsultas,
     };
   }
+
+  // @UsePipes(ValidationPipe)
+  // @Post('import')
+  // @Bind(UploadedFiles())
+  // //@ApiBody({ type: createConsultaSwagger })
+  // @ApiConsumes('multipart/form-data')
+  // @ApiOperation({
+  //   summary: 'Cria um agendamento pelo arquivo Excel.',
+  // })
+  // @UseInterceptors(AnyFilesInterceptor())
+  // async importExcel(file: any) {
+  //   const uploadedFile = file[0];
+  //   const workbook = new ExcelJS.Workbook();
+  //   await workbook.xlsx.load(uploadedFile.buffer);
+  //   const consulta = [];
+
+  //   const worksheet = workbook.getWorksheet(1);
+
+  //   for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) {
+  //     const row = worksheet.getRow(rowNumber);
+
+  //     // Verifique se a célula da coluna A está vazia
+  //     const dataCellValue = row.getCell(1).value;
+  //     if (!dataCellValue) {
+  //       // Se a célula estiver vazia, pule esta linha e vá para a próxima
+  //       continue;
+  //     }
+
+  //     const valeu = {
+  //       date: dataCellValue,
+  //       patient_name: row.getCell(2).value,
+  //       servicos: row.getCell(3).value,
+  //       convenio: row.getCell(4).value,
+  //       preco: row.getCell(5).value,
+  //       pagamento: row.getCell(6).value,
+  //       estado: row.getCell(7).value,
+  //       comentarios: row.getCell(8).value,
+  //     };
+
+  //     consulta.push(valeu);
+  //   }
+
+  //   const createdConsultas = [];
+  //   for (const consultaData of consulta) {
+  //     const appointmentDate = new Date(consultaData.data);
+
+  //     if (isBefore(appointmentDate, Date.now())) {
+  //       throw handleError(new Error('Agendamentos com datas passadas'));
+  //     }
+  //   }
+
+  //   for (const consultaData of consulta) {
+  //     const { patient_name, ...consultaInfo } = consultaData;
+  //     console.log(patient_name);
+
+  //     const user = await this.consultaService.findOne(patient_name);
+
+  //     if (!user) {
+  //       const hashPassword = await bcrypt.hash(uuid(), 10);
+
+  //       const newUser = new Patient();
+  //       newUser.name = patient_name;
+  //       newUser.role = Role.PATIENT;
+  //       newUser.password = hashPassword;
+
+  //       const consulta = new Consulta();
+  //       consulta.patient = newUser;
+  //       Object.assign(consulta, consultaInfo);
+  //       createdConsultas.push(consulta);
+  //     }
+
+  //     const consulta = new Consulta();
+  //     consulta.patient = user;
+  //     Object.assign(consulta, consultaInfo);
+  //     createdConsultas.push(consulta);
+  //   }
+
+  //   return createdConsultas;
+  // }
 
   @Get('all/appointment')
   @UseGuards(AccessTokenGuard, RolesGuard)

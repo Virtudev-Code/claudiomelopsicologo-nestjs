@@ -7,7 +7,6 @@ import IConsultaRepository from '../interfaces/IConsultaRepository';
 import Patient from 'src/database/typeorm/Patient.entities';
 import { Role } from 'src/common/enum/enum';
 import { handleError } from 'src/shared/error/handle-error.util';
-import { isBefore } from 'date-fns';
 import { v4 as uuid } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import {
@@ -15,7 +14,7 @@ import {
   IRequestMonth,
   IRequestMonthPatient,
 } from 'src/common/types/types';
-import { endOfDay, startOfDay } from 'date-fns';
+import { endOfDay, startOfDay, isBefore } from 'date-fns';
 
 @Injectable()
 export class ConsultaRepository implements IConsultaRepository {
@@ -167,5 +166,20 @@ export class ConsultaRepository implements IConsultaRepository {
       },
       relations: ['patient'],
     });
+  }
+
+  async findOne(name: string): Promise<Patient> {
+    const user = await this.userRepository.findOne({
+      where: {
+        name,
+      },
+    });
+
+    delete user.refreshToken;
+    delete user.is_first_time;
+    delete user.accepted;
+    delete user.active;
+
+    return user;
   }
 }

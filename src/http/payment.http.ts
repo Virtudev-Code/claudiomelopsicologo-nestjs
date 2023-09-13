@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoggedUser } from 'src/common/decorators/user.decorator';
 import { Throttle } from '@nestjs/throttler';
@@ -7,7 +15,10 @@ import { RolesGuard } from 'src/common/guards/auth.guard';
 import { Role } from 'src/common/enum/enum';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
-import { PaymentSwagger } from 'src/common/doc/paymentSwagger';
+import {
+  PaymentSwagger,
+  StatusPaymentSwagger,
+} from 'src/common/doc/paymentSwagger';
 import { PaymentService } from 'src/service/payment.service';
 import Patient from 'src/database/typeorm/Patient.entities';
 
@@ -30,6 +41,28 @@ export class PaymentController {
     const info = await this.paymentService.findAppointment(user.id, id);
 
     return info;
+  }
+
+  @Throttle(30, 60)
+  @Put('/update-status-payment/:appointment_id/:user_id')
+  @Roles(Role.ADMIN)
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @ApiOperation({
+    summary:
+      'Atualiza o status de pagamento de um paciente, pode mudar para true ou para false',
+  })
+  async updateStatusPayment(
+    @Param('appointment_id') appointment_id: string,
+    @Param('user_id') user_id: string,
+    @Body() status: StatusPaymentSwagger,
+  ) {
+    const paymentStatus = await this.paymentService.updateStatusPayment(
+      user_id,
+      appointment_id,
+      status.status,
+    );
+
+    return paymentStatus;
   }
 
   @Throttle(30, 60) // Permite no máximo 30 solicitações a cada 60 segundos

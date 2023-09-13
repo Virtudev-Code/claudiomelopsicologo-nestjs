@@ -6,7 +6,6 @@ import { AuthRepository } from './AuthRepositories';
 import Patient from 'src/database/typeorm/Patient.entities';
 import { Role } from 'src/common/enum/enum';
 import { MailService } from 'src/common/mail/mailer.service';
-import { UpdateUser } from 'src/common/types/types';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()

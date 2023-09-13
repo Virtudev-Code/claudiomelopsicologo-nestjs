@@ -4,7 +4,7 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { addMinutes, isAfter } from 'date-fns';
+import { addHours, isAfter } from 'date-fns';
 import { MailService } from 'src/common/mail/mailer.service';
 import { IEmail, IReset } from 'src/common/types/types';
 import { SecurityTokenRepository } from 'src/database/infra/repositories/SecurityRepositories';
@@ -48,7 +48,7 @@ export class SecurityTokenService {
     }
 
     const tokenCreatedAt = userToken.created_at;
-    const compareDate = addMinutes(tokenCreatedAt, 2);
+    const compareDate = addHours(tokenCreatedAt, 2);
 
     if (isAfter(Date.now(), compareDate)) {
       throw new HttpException('Token expired.', HttpStatus.BAD_REQUEST);

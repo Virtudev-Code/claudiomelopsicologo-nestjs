@@ -151,6 +151,23 @@ export class PaymentService {
     }
   }
 
+  async updateStatusPayment(
+    user_id: string,
+    appointment_id: string,
+    status: boolean
+  ): Promise<Consulta> {
+    const appointment = await this.findAppointment(user_id, appointment_id);
+
+    if (!appointment) {
+      throw new BadRequestException('Agendamento não encontrado');
+    }
+
+    appointment.situacaoDoPagamento = status
+    await this.consultaRepository.save(appointment);
+
+    return appointment;
+  }
+
   async makePayment(
     user_id: string,
     appointment_id: string,

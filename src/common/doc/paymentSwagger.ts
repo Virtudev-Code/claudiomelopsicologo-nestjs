@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
+  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -251,4 +252,14 @@ export class PaymentSwagger {
     example: '187.20.141.134',
   })
   ippagamento: string;
+}
+
+export class StatusPaymentSwagger {
+  @IsBoolean()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'Booleano ser true o false dependendo do status',
+    example: true,
+  })
+  status: boolean;
 }
