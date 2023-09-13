@@ -132,6 +132,16 @@ export class ConsultaController {
     });
   }
 
+  @Get('count-by-month')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({
+    summary: 'Retorna a contagem de consultas por mês.',
+  })
+  async getCountByMonth() {
+    return this.consultaService.getCountByMonth();
+  }
+
   @Get(':patient_id/day-appointment-patient/:year/:month')
   @UseGuards(AccessTokenGuard, RolesGuard)
   @Roles(Role.ADMIN)

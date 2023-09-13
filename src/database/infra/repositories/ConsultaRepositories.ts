@@ -102,6 +102,26 @@ export class ConsultaRepository implements IConsultaRepository {
     });
   }
 
+  public async getCountByMonth(): Promise<any[]> {
+    const query = `
+        SELECT
+        EXTRACT(YEAR FROM date) as year,
+        EXTRACT(MONTH FROM date) as month,
+        COUNT(*) as count
+      FROM
+        consulta
+      WHERE
+        date IS NOT NULL
+      GROUP BY
+        year, month
+      ORDER BY
+        year, month
+    `;
+
+    const result = await this.consultaRepository.query(query);
+    return result;
+  }
+
   public async getAppointmentforPatientMonth({
     patient_name,
     month,
