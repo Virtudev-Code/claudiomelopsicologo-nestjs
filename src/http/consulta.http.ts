@@ -63,15 +63,19 @@ export class ConsultaController {
           dateCell && dateCell.value
             ? parse(dateCell.toString(), 'dd/MM/yyyy', new Date())
             : null;
-
+        const precoCell = row.getCell('E');
+        const preco =
+          precoCell && precoCell.value
+            ? parseFloat(precoCell.toString().replace(',', '.'))
+            : null;
         const consulta = {
           date,
           patient_name: row.getCell('B').toString(),
           servicos: row.getCell('C').toString(),
           convenio: row.getCell('D').toString(),
-          preco: row.getCell('E').toString(),
-          estado: row.getCell('F').toString(),
-          comentarios: row.getCell('G').toString(),
+          preco,
+          estado: row.getCell('G').toString(),
+          comentarios: row.getCell('H').toString(),
           situacaoDoPagamento: false,
         };
         consultasImportadas.push(consulta);
@@ -153,14 +157,14 @@ export class ConsultaController {
     });
   }
 
-  @Get('count-by-month')
+  @Get('total-value-by-month')
   @UseGuards(AccessTokenGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({
     summary: 'Retorna a contagem de consultas por mês.',
   })
-  async getCountByMonth() {
-    return this.consultaService.getCountByMonth();
+  async getCountAndTotalValueByMonth() {
+    return this.consultaService.getCountAndTotalValueByMonth();
   }
 
   @Get(':patient_id/day-appointment-patient/:year/:month')

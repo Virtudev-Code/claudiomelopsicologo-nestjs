@@ -133,12 +133,13 @@ export class ConsultaRepository implements IConsultaRepository {
     });
   }
 
-  public async getCountByMonth(): Promise<any[]> {
+  public async getCountAndTotalValueByMonth(): Promise<any[]> {
     const query = `
-        SELECT
+      SELECT
         EXTRACT(YEAR FROM date) as year,
         EXTRACT(MONTH FROM date) as month,
-        COUNT(*) as count
+        COUNT(*) as count,
+        SUM(CAST(preco AS numeric)) as totalValue
       FROM
         consulta
       WHERE

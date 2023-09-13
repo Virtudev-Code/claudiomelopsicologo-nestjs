@@ -47,8 +47,8 @@ export class ConsultaService {
     });
   }
 
-  async getCountByMonth(): Promise<Consulta[]> {
-    return await this.consultaRepository.getCountByMonth();
+  async getCountAndTotalValueByMonth(): Promise<Consulta[]> {
+    return await this.consultaRepository.getCountAndTotalValueByMonth();
   }
 
   async getAppointmentforPatientMonth({
