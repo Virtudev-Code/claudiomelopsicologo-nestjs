@@ -161,7 +161,7 @@ export class ConsultaController {
   @UseGuards(AccessTokenGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({
-    summary: 'Retorna a contagem de consultas por mês.',
+    summary: 'Retorna a contagem e valor total de consultas por mês.',
   })
   async getCountAndTotalValueByMonth() {
     return this.consultaService.getCountAndTotalValueByMonth();
