@@ -29,6 +29,14 @@ export class ConsultaService {
     return await this.consultaRepository.findAllAppointment();
   }
 
+  async findAppointmentByPage(id: number): Promise<Consulta[]> {
+    return await this.consultaRepository.findAppointmentByPage(id);
+  }
+
+  async deleteAppointment(id: string): Promise<void> {
+    return await this.consultaRepository.deleteAppointment(id);
+  }
+
   async getAllAppointmentforMonth({
     month,
     year,

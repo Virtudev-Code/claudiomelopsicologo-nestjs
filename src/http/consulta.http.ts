@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Bind,
+  Delete,
   UseInterceptors,
   UploadedFiles,
   Param,
@@ -94,6 +95,26 @@ export class ConsultaController {
   })
   async findAllAppointment() {
     return this.consultaService.findAllAppointment();
+  }
+
+  @Get('all/page/:id')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({
+    summary: 'Retorna consulta por página, id é o numero da página',
+  })
+  async findAppointmentByPage(@Param('id') id: number) {
+    return this.consultaService.findAppointmentByPage(id);
+  }
+
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({
+    summary: 'Deleta um agendamento.',
+  })
+  @Delete('delete/:id')
+  async deleteAppointment(@Param('id') id: string): Promise<void> {
+    return this.consultaService.deleteAppointment(id);
   }
 
   @Get('all/paid-appointment')

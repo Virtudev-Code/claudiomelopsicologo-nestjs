@@ -14,10 +14,14 @@ import { Routes } from 'src/common/constant/constants';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { createAdminSwagger } from 'src/common/doc/createAdminSwagger';
 import { createPatientSwagger } from 'src/common/doc/createPatientSwagger';
-import { updatePatientSwagger } from 'src/common/doc/updatePatientSwagger';
+import {
+  updateEmailSwagger,
+  updatePatientSwagger,
+} from 'src/common/doc/updatePatientSwagger';
 import { Role } from 'src/common/enum/enum';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { RolesGuard } from 'src/common/guards/auth.guard';
+import { UpdateUser } from 'src/common/types/types';
 import Patient from 'src/database/typeorm/Patient.entities';
 import { AdminService } from 'src/service/admin.service';
 
@@ -81,19 +85,19 @@ export class AdminController {
     return await this.adminService.getAllPatients();
   }
 
-  @Put('/update-patient/:id')
-  @UseGuards(AccessTokenGuard, RolesGuard)
-  @Roles(Role.ADMIN)
-  @ApiOperation({
-    summary: 'Atualiza um paciente através do Id',
-    description: 'Esta Rota atualiza um paciente através do Id',
-  })
-  async updateOnePatient(
-    @Param('id') id: string,
-    @Body() data: updatePatientSwagger,
-  ): Promise<Patient> {
-    return await this.adminService.updateOnePatient(id, data);
-  }
+  // @Put('/update-patient/:id')
+  // @UseGuards(AccessTokenGuard, RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @ApiOperation({
+  //   summary: 'Atualiza um paciente através do Id',
+  //   description: 'Esta Rota atualiza um paciente através do Id',
+  // })
+  // async updateOnePatient(
+  //   @Param('id') id: string,
+  //   @Body() data: updatePatientSwagger,
+  // ): Promise<Patient> {
+  //   return await this.adminService.updateOnePatient(id, data);
+  // }
 
   @Get('/find-patients-without-email')
   @UseGuards(AccessTokenGuard, RolesGuard)
@@ -115,7 +119,7 @@ export class AdminController {
   })
   async updatePatientWithoutEmail(
     @Param('id') id: string,
-    @Body() patient: any,
+    @Body() patient: updateEmailSwagger,
   ): Promise<Patient> {
     return await this.adminService.updatePatientWithoutEmail({ id, patient });
   }

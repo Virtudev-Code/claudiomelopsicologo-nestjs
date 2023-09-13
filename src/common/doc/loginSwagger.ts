@@ -6,7 +6,7 @@ export class loginSwagger {
   @IsNotEmpty()
   @ApiProperty({
     description: 'e-mail do Usuário',
-    example: 'user@email.com',
+    example: 'biahlages@gmail.com',
   })
   email: string;
 

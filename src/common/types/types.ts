@@ -2,7 +2,6 @@
 import { updateEmailSwagger } from '../doc/updatePatientSwagger';
 
 export type UpdateUser = {
-  id: string;
   patient: updateEmailSwagger;
 };
 
