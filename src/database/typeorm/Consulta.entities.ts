@@ -34,8 +34,8 @@ class Consulta {
   @Column({ nullable: true })
   convenio: string;
 
-  @Column({ nullable: true })
-  preco: string;
+  @Column({ type: 'numeric', nullable: true })
+  preco: number;
 
   @Column({ nullable: true })
   situacaoDoPagamento: boolean;

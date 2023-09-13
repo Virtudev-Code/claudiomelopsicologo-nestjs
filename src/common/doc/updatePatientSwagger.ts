@@ -43,11 +43,4 @@ export class updateEmailSwagger {
     example: 'humberto.araripe12@gmail.com',
   })
   email: string;
-
-  @IsBoolean()
-  @ApiProperty({
-    description: 'Ativo.',
-    example: true,
-  })
-  active: true;
 }
