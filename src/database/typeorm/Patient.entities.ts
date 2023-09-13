@@ -28,8 +28,9 @@ class Patient {
   @Column({ nullable: true, unique: true })
   phone_number: string;
 
+  @Exclude()
   @Column({ nullable: true })
-  refresh_token: string;
+  refreshToken: string;
 
   @Column({ nullable: true })
   is_first_time: boolean;

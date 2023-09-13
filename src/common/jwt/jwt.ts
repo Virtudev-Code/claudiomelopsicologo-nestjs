@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Request as RequestType } from 'express';
 import Patient from 'src/database/typeorm/Patient.entities';
 
 type JwtPayload = {
@@ -14,7 +15,7 @@ type JwtPayload = {
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     @InjectRepository(Patient)
-    private readonly patientRepository: Repository<Patient>,
+    private readonly userRepository: Repository<Patient>,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -24,8 +25,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: JwtPayload) {
-    const user = await this.patientRepository.findOne({
-      where: { email: payload.email },
+    const user = await this.userRepository.findOne({
+      where: { id: payload.id },
     });
 
     if (!user) {
@@ -35,5 +36,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     }
 
     return user;
+  }
+
+  private static extractJWT(req: RequestType): string | null {
+    if (req.cookies && 'access_token' in req.cookies) {
+      return req.cookies.access_token;
+    }
+    return null;
   }
 }

@@ -26,18 +26,16 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const { patient }: { patient: Patient } = context
-      .switchToHttp()
-      .getRequest();
+    const { user }: { user: Patient } = context.switchToHttp().getRequest();
 
-    if (!requiredRoles.some((role) => patient.role?.includes(role))) {
+    if (!requiredRoles.some((role) => user.role?.includes(role))) {
       throw new ForbiddenException({
         statusCode: 401,
         message: 'Forbidden resource',
         error: `You don't have permissions to access this route`,
       });
     } else {
-      return requiredRoles.some((role) => patient.role?.includes(role));
+      return requiredRoles.some((role) => user.role?.includes(role));
     }
   }
 }

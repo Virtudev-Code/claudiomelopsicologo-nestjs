@@ -6,12 +6,13 @@ import { ConfigService } from '@nestjs/config';
 import Patient from 'src/database/typeorm/Patient.entities';
 import { loginSwagger } from 'src/common/doc/loginSwagger';
 import { loginResponseSwagger } from 'src/common/doc/loginResponseSwagger';
-import IAuthRepository from '../interfaces/IAuthRepository';
 import { Token } from 'src/common/types/types';
 import * as bcrypt from 'bcrypt';
+import * as argon2 from 'argon2';
+import { Role } from 'src/common/enum/enum';
 
 @Injectable()
-export class AuthRepository implements IAuthRepository {
+export class AuthRepository {
   constructor(
     @InjectRepository(Patient)
     private readonly authRepository: Repository<Patient>,
@@ -51,8 +52,8 @@ export class AuthRepository implements IAuthRepository {
     user.accepted = true;
     await this.authRepository.save(user);
 
-    const token = await this.getTokens(user.id, user.email);
-
+    const token = await this.getTokens(user.id, user.email, user.role);
+    await this.updateRefreshToken(user.id, token.refreshToken);
     delete user.password;
 
     return {
@@ -68,7 +69,7 @@ export class AuthRepository implements IAuthRepository {
       },
     });
     if (user) {
-      user.refresh_token = null;
+      user.refreshToken = null;
       await this.authRepository.save(user);
     }
   }
@@ -80,23 +81,20 @@ export class AuthRepository implements IAuthRepository {
       },
     });
 
-    if (!user || !user.refresh_token) {
+    if (!user || !user.refreshToken) {
       throw new UnauthorizedException('Access Denied');
     }
-
-    const refreshTokenMatches = await bcrypt.compare(
+    const refreshTokenMatches = await argon2.verify(
+      user.refreshToken,
       refreshToken,
-      user.refresh_token,
     );
 
     if (!refreshTokenMatches) {
       throw new UnauthorizedException('Access Denied');
     }
 
-    const tokens = await this.getTokens(user.id, user.email);
-
-    user.refresh_token = tokens.refreshToken;
-    await this.authRepository.save(user);
+    const tokens = await this.getTokens(user.id, user.email, user.role);
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
 
     return tokens;
   }
@@ -107,18 +105,20 @@ export class AuthRepository implements IAuthRepository {
         id,
       },
     });
+    const hashedRefreshToken = await argon2.hash(refreshToken);
     if (user) {
-      user.refresh_token = await bcrypt.hash(refreshToken, 10);
+      user.refreshToken = hashedRefreshToken;
       await this.authRepository.save(user);
     }
   }
 
-  async getTokens(id: string, email: string): Promise<Token> {
+  async getTokens(id: string, email: string, role: Role): Promise<Token> {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
           id,
           email,
+          role,
         },
         {
           secret: this.configService.get<string>('JWT_SECRET'),

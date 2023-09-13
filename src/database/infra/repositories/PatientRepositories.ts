@@ -32,7 +32,7 @@ export class PatientRepository {
 
     patient.name = data.name;
     patient.email = data.email;
-    patient.refresh_token = '';
+    patient.refreshToken = '';
     patient.role = Role.PATIENT;
     patient.frequency = data.frequency;
     patient.password = hashPassword;
@@ -44,6 +44,7 @@ export class PatientRepository {
     const tokens = await this.authRepository.getTokens(
       savedPatient.id,
       savedPatient.name,
+      savedPatient.role,
     );
 
     await this.authRepository.updateRefreshToken(
