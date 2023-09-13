@@ -82,7 +82,6 @@ export class ConsultaController {
     );
 
     return {
-      message: 'Consultas importadas com sucesso',
       createdConsultas,
     };
   }
