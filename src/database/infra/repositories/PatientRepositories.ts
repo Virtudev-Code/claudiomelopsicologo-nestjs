@@ -34,7 +34,6 @@ export class PatientRepository {
     patient.email = data.email;
     patient.refreshToken = '';
     patient.role = Role.PATIENT;
-    patient.frequency = data.frequency;
     patient.password = hashPassword;
     patient.active = true;
     patient.accepted = true;

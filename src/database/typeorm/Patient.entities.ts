@@ -22,12 +22,6 @@ class Patient {
   @Column({ nullable: true, unique: true })
   email: string;
 
-  @Column({ type: 'enum', enum: Frequency, nullable: true })
-  frequency: Frequency;
-
-  @Column({ nullable: true, unique: true })
-  phone_number: string;
-
   @Exclude()
   @Column({ nullable: true })
   refreshToken: string;

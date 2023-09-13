@@ -59,7 +59,7 @@ export class AdminService {
   public async updatePatientWithoutEmail({
     id,
     patient,
-  }: UpdateUser): Promise<Patient> {
+  }: any): Promise<Patient> {
     if (!patient.email) {
       throw new BadRequestException('User email do not exist');
     }

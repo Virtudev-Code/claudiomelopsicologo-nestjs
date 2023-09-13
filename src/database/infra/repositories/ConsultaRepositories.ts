@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import Consulta from 'src/database/typeorm/Consulta.entities';
@@ -66,8 +66,37 @@ export class ConsultaRepository implements IConsultaRepository {
     return createdConsultas;
   }
 
+  public async findAppointmentByPage(id: number): Promise<Consulta[]> {
+    const take = 5;
+    const skip = (id - 1) * id;
+    return await this.consultaRepository.find({
+      relations: ['patient'],
+      take,
+      skip,
+      order: {
+        created_at: 'ASC',
+      },
+    });
+  }
+
+  public async deleteAppointment(id: string): Promise<void> {
+    const consulta = await this.consultaRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!consulta) {
+      throw new NotFoundException('Appointment not found');
+    }
+
+    await this.consultaRepository.remove(consulta);
+  }
+
   public async findAllAppointment(): Promise<Consulta[]> {
-    return await this.consultaRepository.find();
+    return await this.consultaRepository.find({
+      relations: ['patient'],
+    });
   }
 
   public async findAllPaidAppointment(): Promise<Consulta[]> {
@@ -75,6 +104,7 @@ export class ConsultaRepository implements IConsultaRepository {
       where: {
         situacaoDoPagamento: true,
       },
+      relations: ['patient'],
     });
   }
 
@@ -83,6 +113,7 @@ export class ConsultaRepository implements IConsultaRepository {
       where: {
         situacaoDoPagamento: false,
       },
+      relations: ['patient'],
     });
   }
 

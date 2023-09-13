@@ -107,22 +107,25 @@ export class AdminRepository {
   }
 
   public async getPatientWithoutEmail(): Promise<Patient[]> {
-    return await this.adminRepository.find({
-      where: {
-        email: null,
-      },
-    });
+    return this.adminRepository
+      .createQueryBuilder('patient')
+      .where('patient.email IS NULL')
+      .andWhere('patient.role != :role', { role: 'admin' })
+      .getMany();
   }
 
   public async updatePatientWithoutEmail({
     id,
     patient,
-  }: UpdateUser): Promise<Patient> {
+  }: any): Promise<Patient> {
     const user = await this.adminRepository.findOne({
       where: {
         id,
       },
     });
+
+    user.accepted = true;
+    user.active = true;
 
     Object.assign(user, patient);
 

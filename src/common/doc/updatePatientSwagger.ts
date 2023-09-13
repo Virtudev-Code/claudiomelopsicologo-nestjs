@@ -40,7 +40,7 @@ export class updateEmailSwagger {
   @IsEmail()
   @ApiProperty({
     description: 'Nome do usuário.',
-    example: 'User',
+    example: 'humberto.araripe12@gmail.com',
   })
   email: string;
 
