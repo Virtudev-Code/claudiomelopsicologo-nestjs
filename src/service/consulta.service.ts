@@ -52,8 +52,8 @@ export class ConsultaService {
     });
   }
 
-  async getCountAndTotalValueByMonth(): Promise<Consulta[]> {
-    return await this.consultaRepository.getCountAndTotalValueByMonth();
+  async getTotalValueByMonth({ month, year }: IRequestMonth): Promise<number> {
+    return await this.consultaRepository.getTotalValueByMonth(month, year);
   }
 
   async getAppointmentforPatientMonth({

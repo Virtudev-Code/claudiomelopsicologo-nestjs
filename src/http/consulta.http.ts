@@ -204,14 +204,17 @@ export class ConsultaController {
     });
   }
 
-  @Get('total-value-by-month')
+  @Get('total-value-by-month/:year/:month')
   @UseGuards(AccessTokenGuard, RolesGuard)
-  @Roles(Role.ADMIN)
   @ApiOperation({
-    summary: 'Retorna a contagem e valor total de consultas por mês.',
+    summary:
+      'Retorna o total de valor de consultas para um mês e ano específicos.',
   })
-  async getCountAndTotalValueByMonth() {
-    return this.consultaService.getCountAndTotalValueByMonth();
+  async getTotalValueByMonth(
+    @Param('year') year: number,
+    @Param('month') month: number,
+  ) {
+    return this.consultaService.getTotalValueByMonth({ year, month });
   }
 
   @Get(':patient_id/day-appointment-patient/:year/:month')
