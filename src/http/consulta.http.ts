@@ -14,26 +14,18 @@ import {
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiConsumes,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { Routes } from 'src/common/constant/constants';
 import { ConsultaService } from 'src/service/consulta.service';
-import { createConsultaSwagger } from 'src/common/doc/createConsultaSwagger';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { RolesGuard } from 'src/common/guards/auth.guard';
 import * as ExcelJS from 'exceljs';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { Role } from 'src/common/enum/enum';
-import { isBefore } from 'date-fns';
 import { parse } from 'date-fns';
-import Patient from 'src/database/typeorm/Patient.entities';
-import Consulta from 'src/database/typeorm/Consulta.entities';
-import { handleError } from 'src/shared/error/handle-error.util';
-import { v4 as uuid } from 'uuid';
-import * as bcrypt from 'bcrypt';
 
 @ApiTags(Routes.CONSULTA)
 @Controller(Routes.CONSULTA)
@@ -41,139 +33,110 @@ import * as bcrypt from 'bcrypt';
 export class ConsultaController {
   constructor(private readonly consultaService: ConsultaService) {}
 
-  @UsePipes(ValidationPipe)
-  @UseGuards(AccessTokenGuard, RolesGuard)
-  @Roles(Role.ADMIN)
-  @Post('upload')
-  @Bind(UploadedFiles())
-  @ApiBody({ type: createConsultaSwagger })
-  @ApiConsumes('multipart/form-data')
-  @ApiOperation({
-    summary: 'Cria um agendamento pelo arquivo Excel.',
-  })
-  @UseInterceptors(AnyFilesInterceptor())
-  async uploadFile(files: any) {
-    const uploadedFile = files[0];
-
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(uploadedFile.buffer);
-
-    const worksheet = workbook.getWorksheet(1);
-    const consultasImportadas = [];
-
-    worksheet.eachRow((row, rowNumber) => {
-      if (rowNumber !== 1) {
-        const dateCell = row.getCell('A');
-        const date =
-          dateCell && dateCell.value
-            ? parse(dateCell.toString(), 'dd/MM/yyyy', new Date())
-            : null;
-        const precoCell = row.getCell('E');
-        const preco =
-          precoCell && precoCell.value
-            ? parseFloat(precoCell.toString().replace(',', '.'))
-            : null;
-        const consulta = {
-          date,
-          patient_name: row.getCell('B').toString(),
-          servicos: row.getCell('C').toString(),
-          convenio: row.getCell('D').toString(),
-          preco,
-          estado: row.getCell('G').toString(),
-          comentarios: row.getCell('H').toString(),
-          situacaoDoPagamento: false,
-        };
-        consultasImportadas.push(consulta);
-      }
-    });
-
-    const createdConsultas = await this.consultaService.createConsultas(
-      consultasImportadas,
-    );
-
-    return {
-      createdConsultas,
-    };
-  }
-
   // @UsePipes(ValidationPipe)
-  // @Post('import')
+  // @UseGuards(AccessTokenGuard, RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @Post('upload')
   // @Bind(UploadedFiles())
-  // //@ApiBody({ type: createConsultaSwagger })
+  // @ApiBody({ type: createConsultaSwagger })
   // @ApiConsumes('multipart/form-data')
   // @ApiOperation({
   //   summary: 'Cria um agendamento pelo arquivo Excel.',
   // })
   // @UseInterceptors(AnyFilesInterceptor())
-  // async importExcel(file: any) {
-  //   const uploadedFile = file[0];
+  // async uploadFile(files: any) {
+  //   const uploadedFile = files[0];
+
   //   const workbook = new ExcelJS.Workbook();
   //   await workbook.xlsx.load(uploadedFile.buffer);
-  //   const consulta = [];
 
   //   const worksheet = workbook.getWorksheet(1);
+  //   const consultasImportadas = [];
 
-  //   for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) {
-  //     const row = worksheet.getRow(rowNumber);
-
-  //     // Verifique se a célula da coluna A está vazia
-  //     const dataCellValue = row.getCell(1).value;
-  //     if (!dataCellValue) {
-  //       // Se a célula estiver vazia, pule esta linha e vá para a próxima
-  //       continue;
+  //   worksheet.eachRow((row, rowNumber) => {
+  //     if (rowNumber !== 1) {
+  //       const dateCell = row.getCell('A');
+  //       const date =
+  //         dateCell && dateCell.value
+  //           ? parse(dateCell.toString(), 'dd/MM/yyyy', new Date())
+  //           : null;
+  //       const precoCell = row.getCell('E');
+  //       const preco =
+  //         precoCell && precoCell.value
+  //           ? parseFloat(precoCell.toString().replace(',', '.'))
+  //           : null;
+  //       const consulta = {
+  //         date,
+  //         patient_name: row.getCell('B').toString(),
+  //         servicos: row.getCell('C').toString(),
+  //         convenio: row.getCell('D').toString(),
+  //         preco,
+  //         estado: row.getCell('G').toString(),
+  //         comentarios: row.getCell('H').toString(),
+  //         situacaoDoPagamento: false,
+  //       };
+  //       consultasImportadas.push(consulta);
   //     }
+  //   });
 
-  //     const valeu = {
-  //       date: dataCellValue,
-  //       patient_name: row.getCell(2).value,
-  //       servicos: row.getCell(3).value,
-  //       convenio: row.getCell(4).value,
-  //       preco: row.getCell(5).value,
-  //       pagamento: row.getCell(6).value,
-  //       estado: row.getCell(7).value,
-  //       comentarios: row.getCell(8).value,
-  //     };
+  //   const createdConsultas = await this.consultaService.createConsultas(
+  //     consultasImportadas,
+  //   );
 
-  //     consulta.push(valeu);
-  //   }
-
-  //   const createdConsultas = [];
-  //   for (const consultaData of consulta) {
-  //     const appointmentDate = new Date(consultaData.data);
-
-  //     if (isBefore(appointmentDate, Date.now())) {
-  //       throw handleError(new Error('Agendamentos com datas passadas'));
-  //     }
-  //   }
-
-  //   for (const consultaData of consulta) {
-  //     const { patient_name, ...consultaInfo } = consultaData;
-  //     console.log(patient_name);
-
-  //     const user = await this.consultaService.findOne(patient_name);
-
-  //     if (!user) {
-  //       const hashPassword = await bcrypt.hash(uuid(), 10);
-
-  //       const newUser = new Patient();
-  //       newUser.name = patient_name;
-  //       newUser.role = Role.PATIENT;
-  //       newUser.password = hashPassword;
-
-  //       const consulta = new Consulta();
-  //       consulta.patient = newUser;
-  //       Object.assign(consulta, consultaInfo);
-  //       createdConsultas.push(consulta);
-  //     }
-
-  //     const consulta = new Consulta();
-  //     consulta.patient = user;
-  //     Object.assign(consulta, consultaInfo);
-  //     createdConsultas.push(consulta);
-  //   }
-
-  //   return createdConsultas;
+  //   return {
+  //     createdConsultas,
+  //   };
   // }
+
+  @UsePipes(ValidationPipe)
+  @Post('upload')
+  @Bind(UploadedFiles())
+  //@ApiBody({ type: createConsultaSwagger })
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({
+    summary: 'Cria um agendamento pelo arquivo Excel.',
+  })
+  @UseInterceptors(AnyFilesInterceptor())
+  async importExcel(file: any) {
+    const uploadedFile = file[0];
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(uploadedFile.buffer);
+    const consulta = [];
+
+    const worksheet = workbook.getWorksheet(1);
+
+    for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) {
+      const row = worksheet.getRow(rowNumber);
+
+      const dataCellValue = row.getCell(1).value;
+
+      if (!dataCellValue) {
+        continue;
+      }
+
+      const dataCellString = dataCellValue.toString();
+      const date = parse(dataCellString, 'dd/MM/yyyy', new Date());
+
+      const value = {
+        date,
+        patient_name: row.getCell(2).value,
+        servicos: row.getCell(3).value,
+        convenio: row.getCell(4).value,
+        preco: row.getCell(5).value,
+        pagamento: row.getCell(6).value,
+        estado: row.getCell(7).value,
+        comentarios: row.getCell(8).value,
+      };
+
+      consulta.push(value);
+    }
+
+    const createdConsultas = await this.consultaService.createConsultas(
+      consulta,
+    );
+
+    return createdConsultas;
+  }
 
   @Get('all/appointment')
   @UseGuards(AccessTokenGuard, RolesGuard)

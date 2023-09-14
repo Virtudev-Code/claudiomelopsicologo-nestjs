@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
@@ -18,6 +19,9 @@ class Consulta {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ unique: true, nullable: true })
+  chaveERP: string;
+
   @Column('timestamp', { nullable: true })
   date: Date;
 
@@ -34,10 +38,10 @@ class Consulta {
   @Column({ nullable: true })
   convenio: string;
 
-  @Column({ type: 'numeric', nullable: true })
-  preco: number;
-
   @Column({ nullable: true })
+  preco: string;
+
+  @Column({ nullable: true, default: false })
   situacaoDoPagamento: boolean;
 
   @Column({ nullable: true })
@@ -55,6 +59,13 @@ class Consulta {
   @OneToOne(() => Transacao, (transacao) => transacao.consulta)
   @JoinColumn({ name: 'transacao_id' })
   transacao: Transacao;
+
+  @BeforeInsert()
+  generateChaveERP() {
+    if (!this.chaveERP) {
+      this.chaveERP = uuid();
+    }
+  }
 
   constructor() {
     if (!this.id) {

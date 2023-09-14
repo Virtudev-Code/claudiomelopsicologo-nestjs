@@ -19,7 +19,7 @@ export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
       database: configService.get('POSTGRES_DB_DATABASE'),
       entities: ['dist/**/*.entities{.js,.ts}'],
       migrations: [`dist/database/migrations/*{.ts,.js}`],
-      synchronize: true,
+      synchronize: false,
       autoLoadEntities: false,
       migrationsRun: false,
       migrationsTableName: 'migrations',

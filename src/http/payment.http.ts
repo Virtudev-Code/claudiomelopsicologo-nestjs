@@ -66,7 +66,7 @@ export class PaymentController {
   }
 
   @Throttle(30, 60) // Permite no máximo 30 solicitações a cada 60 segundos
-  @Post('/makePay/:appointmen_id')
+  @Post('/makePay/:appointment_id')
   @Roles(Role.PATIENT)
   @UseGuards(AccessTokenGuard, RolesGuard)
   @ApiOperation({

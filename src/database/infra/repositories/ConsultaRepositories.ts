@@ -28,7 +28,16 @@ export class ConsultaRepository implements IConsultaRepository {
   public async createConsultas(
     consultasData: createConsultaSwagger[],
   ): Promise<Consulta[]> {
-    const createdConsultas = [];
+    const consultasImportadas = [];
+
+    for (const consultaData of consultasData) {
+      const appointmentDate = new Date(consultaData.data);
+
+      if (isBefore(appointmentDate, Date.now())) {
+        throw handleError(new Error('Agendamentos com datas passadas'));
+      }
+    }
+
     for (const consultaData of consultasData) {
       const appointmentDate = new Date(consultaData.data);
 
@@ -40,29 +49,40 @@ export class ConsultaRepository implements IConsultaRepository {
     for (const consultaData of consultasData) {
       const { patient_name, ...consultaInfo } = consultaData;
 
-      let user = await this.userRepository.findOne({
-        where: { name: patient_name },
+      const user = await this.userRepository.findOne({
+        where: {
+          name: patient_name,
+        },
       });
+
+      delete user.accepted;
+      delete user.refreshToken;
+      delete user.active;
+      delete user.is_first_time;
 
       if (!user) {
         const hashPassword = await bcrypt.hash(uuid(), 10);
 
-        user = new Patient();
-        user.name = patient_name;
-        user.role = Role.PATIENT;
-        user.password = hashPassword;
-        await this.userRepository.save(user);
+        const newUser = new Patient();
+        newUser.name = patient_name;
+        newUser.role = Role.PATIENT;
+        newUser.password = hashPassword;
+
+        const consulta = new Consulta();
+        consulta.patient = newUser;
+        Object.assign(consulta, consultaInfo);
+        const createdConsulta = await this.consultaRepository.save(consulta);
+        consultasImportadas.push(createdConsulta);
       }
 
       const consulta = new Consulta();
       consulta.patient = user;
-      consulta.patient_name = patient_name;
       Object.assign(consulta, consultaInfo);
-
       const createdConsulta = await this.consultaRepository.save(consulta);
-      createdConsultas.push(createdConsulta);
+      consultasImportadas.push(createdConsulta);
     }
-    return createdConsultas;
+
+    return consultasImportadas;
   }
 
   public async findAppointmentByPage(id: number): Promise<Consulta[]> {

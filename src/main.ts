@@ -16,8 +16,8 @@ async function bootstrap() {
   // Habilitando o CORS na aplicação
   app.enableCors({
     credentials: true,
-    allowedHeaders: '*',
-    origin: '*',
+    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
+    origin: 'https://main.d1qoyldf4pppqd.amplifyapp.com',
   });
 
   // Adicionando o ValidationPipe global à aplicação
