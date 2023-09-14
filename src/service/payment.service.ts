@@ -25,18 +25,10 @@ export class PaymentService {
     appointment_id: string,
     data: PaymentSwagger,
   ): Promise<Consulta> {
-    if (!appointment_id) {
-      throw new BadRequestException('Agendamento não encontrado');
-    }
-
-    const appointment = await this.findAppointmentStatus(
+    const appointment = await this.findAppointmentValidation(
       user_id,
       appointment_id,
     );
-
-    if (appointment.situacaoDoPagamento === true) {
-      throw new BadRequestException('Pagamento já foi concluido');
-    }
 
     const AuthToken = `fKW9LXv8BJBCVFuZvO3q6uh1YV/5NhEjvbUa1kLHj4LqWhZFZhlVFVEZRlk8PRyt`;
 
@@ -200,6 +192,31 @@ export class PaymentService {
     } catch (error) {
       throw error;
     }
+  }
+
+  public async findAppointmentValidation(
+    user_id: string,
+    appointment_id: string,
+  ) {
+    const appointment = await this.consultaRepository.findOne({
+      where: {
+        id: appointment_id,
+        patient: {
+          id: user_id,
+        },
+      },
+      relations: ['transacao'],
+    });
+
+    if (!appointment) {
+      throw new NotFoundException(`Appointment with id: ${user_id} not found`);
+    }
+
+    if (appointment.situacaoDoPagamento === true) {
+      throw new BadRequestException('Pagamento já foi concluido');
+    }
+
+    return appointment;
   }
 
   public async findAppointmentStatus(user_id: string, appointment_id: string) {
