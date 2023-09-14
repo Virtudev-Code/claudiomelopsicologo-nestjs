@@ -14,6 +14,12 @@ import { v4 as uuid } from 'uuid';
 import Patient from './Patient.entities';
 import Transacao from './Transacao.entities';
 
+export enum TypePayment {
+  CARD = 'card',
+  BOLETO = 'boleto',
+  OUTRO = 'outro',
+}
+
 @Entity({ name: 'consulta' })
 class Consulta {
   @PrimaryGeneratedColumn('uuid')
@@ -21,6 +27,9 @@ class Consulta {
 
   @Column({ unique: true, nullable: true })
   chaveERP: string;
+
+  @Column({ type: 'enum', enum: TypePayment, nullable: true })
+  type: TypePayment;
 
   @Column('timestamp', { nullable: true })
   date: Date;

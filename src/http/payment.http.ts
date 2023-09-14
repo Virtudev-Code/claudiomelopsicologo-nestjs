@@ -28,19 +28,49 @@ import Patient from 'src/database/typeorm/Patient.entities';
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  @Post('/test/:id')
+  @Throttle(30, 60) // Permite no máximo 30 solicitações a cada 60 segundos
+  @Post('/makePay/:appointment_id')
+  @Roles(Role.PATIENT)
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @ApiOperation({
+    summary: 'Realizar pagamentos para a Api da Contself',
+  })
+  async makePayment(
+    @LoggedUser() user: Patient,
+    @Body() data: PaymentSwagger,
+    @Param('appointment_id') appointment_id: string,
+  ) {
+    const payment = await this.paymentService.makePayment(
+      user.id,
+      appointment_id,
+      data,
+    );
+
+    return payment;
+  }
+
+  @Post('/paymentInquiry/:id')
   @Roles(Role.PATIENT)
   @UseGuards(AccessTokenGuard, RolesGuard)
   @ApiOperation({
     summary:
       'Busca as informações de uma transação de um User através do id do agendamento',
   })
-  async find(@LoggedUser() user: Patient, @Param('id') id: string) {
-    console.log(id);
+  async paymentInquiry(@LoggedUser() user: Patient, @Param('id') id: string) {
+    return await this.paymentService.paymentInquiry(user.id, id);
+  }
 
-    const info = await this.paymentService.findAppointment(user.id, id);
-
-    return info;
+  @Get('/cancelPay/:id')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.PATIENT)
+  @ApiOperation({
+    summary: 'Cancela o Pagamento de um Agendamento',
+  })
+  async cancelPay(
+    @LoggedUser() user: Patient,
+    @Param('id') patient_id: string,
+  ) {
+    return this.paymentService.cancelPay(user.id, patient_id);
   }
 
   @Throttle(30, 60)
@@ -65,27 +95,6 @@ export class PaymentController {
     return paymentStatus;
   }
 
-  @Throttle(30, 60) // Permite no máximo 30 solicitações a cada 60 segundos
-  @Post('/makePay/:appointment_id')
-  @Roles(Role.PATIENT)
-  @UseGuards(AccessTokenGuard, RolesGuard)
-  @ApiOperation({
-    summary: 'Realizar pagamentos para a Api da Contself',
-  })
-  async makePayment(
-    @LoggedUser() user: Patient,
-    @Body() data: PaymentSwagger,
-    @Param('appointmen_id') appointmen_id: string,
-  ) {
-    const payment = await this.paymentService.makePayment(
-      user.id,
-      appointmen_id,
-      data,
-    );
-
-    return payment;
-  }
-
   @Post('/urlRetornoContself')
   @ApiOperation({
     summary: 'Retorna o histórico de atendimento do Doutor ',
@@ -94,16 +103,28 @@ export class PaymentController {
     console.log(data);
   }
 
-  @Get('/cancelPay/:id')
-  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Post('/emiteBoleto')
   @Roles(Role.PATIENT)
+  @UseGuards(AccessTokenGuard, RolesGuard)
   @ApiOperation({
-    summary: 'Cancela o Pagamento de um Agendamento',
+    summary: 'API utilizada para realizar requisições de emissão de boleto',
   })
-  async cancelPay(
+  async emiteBoleto(
     @LoggedUser() user: Patient,
-    @Param('id') patient_id: string,
+    @Param('id') id: string,
+    @Body() data: any,
   ) {
-    return this.paymentService.cancelPayment(user.id, patient_id);
+    return await this.paymentService.emiteBoleto(user.id, id, data);
+  }
+
+  @Get('/consultaBoleto/:id')
+  @Roles(Role.PATIENT)
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @ApiOperation({
+    summary:
+      'Busca as informações de uma consulta de um boleto através do id do agendamento',
+  })
+  async consultaBoleto(@LoggedUser() user: Patient, @Param('id') id: string) {
+    return await this.paymentService.consultaBoleto(user.id, id);
   }
 }
