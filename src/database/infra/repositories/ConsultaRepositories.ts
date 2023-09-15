@@ -75,11 +75,23 @@ export class ConsultaRepository implements IConsultaRepository {
         consultasImportadas.push(createdConsulta);
       }
 
-      const consulta = new Consulta();
-      consulta.patient = user;
-      Object.assign(consulta, consultaInfo);
-      const createdConsulta = await this.consultaRepository.save(consulta);
-      consultasImportadas.push(createdConsulta);
+      const getConsulta = await this.consultaRepository.findOne({
+        where: {
+          convenio: consultaInfo.convenio,
+          patient_name,
+          servicos: consultaInfo.servicos,
+          date: consultaInfo.data,
+          preco: consultaInfo.preco,
+        },
+      });
+
+      if (!getConsulta) {
+        const consulta = new Consulta();
+        consulta.patient = user;
+        Object.assign(consulta, consultaInfo);
+        const createdConsulta = await this.consultaRepository.save(consulta);
+        consultasImportadas.push(createdConsulta);
+      }
     }
 
     return consultasImportadas;

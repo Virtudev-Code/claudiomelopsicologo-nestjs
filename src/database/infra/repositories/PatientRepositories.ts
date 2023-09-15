@@ -2,7 +2,10 @@ import { Between, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createPatientSwagger } from 'src/common/doc/createPatientSwagger';
-import { updatePatientSwagger } from 'src/common/doc/updatePatientSwagger';
+import {
+  updateEmailSwagger,
+  updatePatientSwagger,
+} from 'src/common/doc/updatePatientSwagger';
 import { AuthRepository } from './AuthRepositories';
 import { Role } from 'src/common/enum/enum';
 import Patient from 'src/database/typeorm/Patient.entities';
@@ -90,6 +93,14 @@ export class PatientRepository {
   async updatePatient(
     id: string,
     data: updatePatientSwagger,
+  ): Promise<Patient> {
+    await this.patientRepository.update(id, data);
+    return this.findPatientById(id);
+  }
+
+  async updateEmailPatient(
+    id: string,
+    data: updateEmailSwagger,
   ): Promise<Patient> {
     await this.patientRepository.update(id, data);
     return this.findPatientById(id);

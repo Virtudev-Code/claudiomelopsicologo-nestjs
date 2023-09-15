@@ -1,6 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { createPatientSwagger } from 'src/common/doc/createPatientSwagger';
-import { updatePatientSwagger } from 'src/common/doc/updatePatientSwagger';
+import {
+  updateEmailSwagger,
+  updatePatientSwagger,
+} from 'src/common/doc/updatePatientSwagger';
 import Patient from 'src/database/typeorm/Patient.entities';
 import { PatientRepository } from 'src/database/infra/repositories/PatientRepositories';
 import Consulta from 'src/database/typeorm/Consulta.entities';
@@ -58,6 +61,13 @@ export class PatientService {
     data: updatePatientSwagger,
   ): Promise<Patient> {
     return await this.patientRepository.updatePatient(id, data);
+  }
+
+  async updateEmailPatient(
+    id: string,
+    data: updateEmailSwagger,
+  ): Promise<Patient> {
+    return await this.patientRepository.updateEmailPatient(id, data);
   }
 
   async getAllAppointmentforMonth({
