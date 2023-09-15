@@ -24,12 +24,16 @@ import { RolesGuard } from 'src/common/guards/auth.guard';
 import { UpdateUser } from 'src/common/types/types';
 import Patient from 'src/database/typeorm/Patient.entities';
 import { AdminService } from 'src/service/admin.service';
+import { PatientService } from 'src/service/patient.service';
 
 @ApiTags(Routes.ADMIN)
 @Controller(Routes.ADMIN)
 @ApiBearerAuth()
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly patientService: PatientService,
+  ) {}
 
   @UsePipes(ValidationPipe)
   @Post('/creat-admin')
@@ -83,6 +87,19 @@ export class AdminController {
   })
   async getAllPatients(): Promise<Patient[]> {
     return await this.adminService.getAllPatients();
+  }
+
+  @Put('update-email/:idPatient')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({
+    summary: 'Atualiza o email do paciente',
+  })
+  async updatePatient(
+    @Body() data: updateEmailSwagger,
+    @Param('idPatient') idPatient: string,
+  ) {
+    return this.patientService.updateEmailPatient(idPatient, data);
   }
 
   // @Put('/update-patient/:id')
