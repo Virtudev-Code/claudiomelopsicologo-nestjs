@@ -17,7 +17,18 @@ async function bootstrap() {
   app.enableCors({
     credentials: true,
     allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
-    origin: 'https://main.d1qoyldf4pppqd.amplifyapp.com',
+    origin: function (origin, callback) {
+      const whitelist = [
+        'http://localhost:3000',
+        'https://main.d1qoyldf4pppqd.amplifyapp.com',
+      ];
+
+      if (whitelist.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
   });
 
   // Adicionando o ValidationPipe global à aplicação
