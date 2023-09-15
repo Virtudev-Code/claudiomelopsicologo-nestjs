@@ -14,14 +14,10 @@ import { Routes } from 'src/common/constant/constants';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { createAdminSwagger } from 'src/common/doc/createAdminSwagger';
 import { createPatientSwagger } from 'src/common/doc/createPatientSwagger';
-import {
-  updateEmailSwagger,
-  updatePatientSwagger,
-} from 'src/common/doc/updatePatientSwagger';
+import { updateEmailSwagger } from 'src/common/doc/updatePatientSwagger';
 import { Role } from 'src/common/enum/enum';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { RolesGuard } from 'src/common/guards/auth.guard';
-import { UpdateUser } from 'src/common/types/types';
 import Patient from 'src/database/typeorm/Patient.entities';
 import { AdminService } from 'src/service/admin.service';
 

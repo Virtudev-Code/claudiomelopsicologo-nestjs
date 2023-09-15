@@ -13,6 +13,7 @@ import {
 import { v4 as uuid } from 'uuid';
 import Patient from './Patient.entities';
 import Transacao from './Transacao.entities';
+import { Exclude } from 'class-transformer';
 
 export enum TypePayment {
   CARD = 'card',
@@ -25,6 +26,7 @@ class Consulta {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Exclude()
   @Column({ unique: true, nullable: true })
   chaveERP: string;
 
