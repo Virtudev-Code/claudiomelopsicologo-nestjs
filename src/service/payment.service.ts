@@ -39,7 +39,7 @@ export class PaymentService {
 
     const paymentPayload: PaymentSwagger = {
       urlretorno: data.urlretorno,
-      chaveerp: data.chaveerp,
+      chaveerp: appointment.chaveERP,
       valor: data.valor,
       numeroparcela: data.numeroparcela,
       nome: data.nome,

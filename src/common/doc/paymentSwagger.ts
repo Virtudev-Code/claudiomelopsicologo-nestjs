@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
   IsBoolean,
+  IsEmpty,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -65,87 +66,87 @@ export class PaymentSwagger {
   email: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsEmpty()
   @ApiProperty({
-    description: "Payer's phone number",
-    example: '31994553025',
+    description: '',
+    example: '',
   })
   telefone: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsEmpty()
   @ApiProperty({
-    description: 'State',
-    example: 'MG',
+    description: '',
+    example: '',
   })
   uf: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsEmpty()
   @ApiProperty({
-    description: 'City',
-    example: 'Belo Horizonte',
+    description: '',
+    example: '',
   })
   cidade: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsEmpty()
   @ApiProperty({
-    description: 'Street name',
-    example: 'Rua Alagoas',
+    description: '',
+    example: '',
   })
   logradouro: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsEmpty()
   @ApiProperty({
-    description: 'Neighborhood',
-    example: 'Centro',
+    description: '',
+    example: '',
   })
   bairro: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsEmpty()
   @ApiProperty({
-    description: 'Street number',
-    example: '455',
+    description: '',
+    example: '',
   })
   numero: string;
 
-  @IsOptional() // Indica que o campo pode ser nulo
-  @IsString()
+  @IsOptional()
+  @IsEmpty()
   @ApiProperty({
-    description: 'Additional address info',
-    example: null,
+    description: '',
+    example: '',
   })
   complemento: string | null;
 
   @IsString()
-  @IsNotEmpty()
+  @IsEmpty()
   @ApiProperty({
-    description: 'Postal code (CEP)',
-    example: '30130-160',
+    description: '',
+    example: '',
   })
   cep: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsEmpty()
   @ApiProperty({
-    description: "Beneficiary's name",
-    example: 'Venceslau Ferreira',
+    description: '',
+    example: '',
   })
   nomebeneficiario: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsEmpty()
   @ApiProperty({
-    description: "Beneficiary's CPF",
-    example: '922.482.690-30',
+    description: '',
+    example: '',
   })
   cpfbeneficiario: string;
 
   @IsArray()
-  @IsNotEmpty()
+  @IsEmpty()
   @ApiProperty({
     description: 'List of divisions',
     example: [
