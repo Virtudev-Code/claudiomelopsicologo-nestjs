@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
   IsBoolean,
-  IsEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -66,7 +65,7 @@ export class PaymentSwagger {
   email: string;
 
   @IsString()
-  @IsEmpty()
+  @IsOptional()
   @ApiProperty({
     description: '',
     example: '',
@@ -74,7 +73,7 @@ export class PaymentSwagger {
   telefone: string;
 
   @IsString()
-  @IsEmpty()
+  @IsOptional()
   @ApiProperty({
     description: '',
     example: '',
@@ -82,7 +81,7 @@ export class PaymentSwagger {
   uf: string;
 
   @IsString()
-  @IsEmpty()
+  @IsOptional()
   @ApiProperty({
     description: '',
     example: '',
@@ -90,7 +89,7 @@ export class PaymentSwagger {
   cidade: string;
 
   @IsString()
-  @IsEmpty()
+  @IsOptional()
   @ApiProperty({
     description: '',
     example: '',
@@ -98,7 +97,7 @@ export class PaymentSwagger {
   logradouro: string;
 
   @IsString()
-  @IsEmpty()
+  @IsOptional()
   @ApiProperty({
     description: '',
     example: '',
@@ -106,7 +105,7 @@ export class PaymentSwagger {
   bairro: string;
 
   @IsString()
-  @IsEmpty()
+  @IsOptional()
   @ApiProperty({
     description: '',
     example: '',
@@ -114,7 +113,7 @@ export class PaymentSwagger {
   numero: string;
 
   @IsOptional()
-  @IsEmpty()
+  @IsOptional()
   @ApiProperty({
     description: '',
     example: '',
@@ -122,7 +121,7 @@ export class PaymentSwagger {
   complemento: string | null;
 
   @IsString()
-  @IsEmpty()
+  @IsOptional()
   @ApiProperty({
     description: '',
     example: '',
@@ -130,7 +129,7 @@ export class PaymentSwagger {
   cep: string;
 
   @IsString()
-  @IsEmpty()
+  @IsOptional()
   @ApiProperty({
     description: '',
     example: '',
@@ -138,7 +137,7 @@ export class PaymentSwagger {
   nomebeneficiario: string;
 
   @IsString()
-  @IsEmpty()
+  @IsOptional()
   @ApiProperty({
     description: '',
     example: '',
@@ -146,7 +145,7 @@ export class PaymentSwagger {
   cpfbeneficiario: string;
 
   @IsArray()
-  @IsEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'List of divisions',
     example: [
