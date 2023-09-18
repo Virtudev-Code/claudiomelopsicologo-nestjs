@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import Consulta from 'src/database/typeorm/Consulta.entities';
@@ -53,32 +49,6 @@ export class ConsultaRepository implements IConsultaRepository {
     for (const consultaData of consultasData) {
       const { patient_name, ...consultaInfo } = consultaData;
 
-      const user = await this.userRepository.findOne({
-        where: {
-          name: patient_name,
-        },
-      });
-
-      delete user.accepted;
-      delete user.refreshToken;
-      delete user.active;
-      delete user.is_first_time;
-
-      if (!user) {
-        const hashPassword = await bcrypt.hash(uuid(), 10);
-
-        const newUser = new Patient();
-        newUser.name = patient_name;
-        newUser.role = Role.PATIENT;
-        newUser.password = hashPassword;
-
-        const consulta = new Consulta();
-        consulta.patient = newUser;
-        Object.assign(consulta, consultaInfo);
-        const createdConsulta = await this.consultaRepository.save(consulta);
-        consultasImportadas.push(createdConsulta);
-      }
-
       const getConsulta = await this.consultaRepository.findOne({
         where: {
           patient: {
@@ -96,9 +66,31 @@ export class ConsultaRepository implements IConsultaRepository {
         continue;
       }
 
-      if (!getConsulta) {
+      const user = await this.userRepository.findOne({
+        where: {
+          name: patient_name,
+        },
+      });
+
+      if (user) {
         const consulta = new Consulta();
         consulta.patient = user;
+        Object.assign(consulta, consultaInfo);
+        const createdConsulta = await this.consultaRepository.save(consulta);
+        consultasImportadas.push(createdConsulta);
+      }
+
+      if (!user) {
+        const hashPassword = await bcrypt.hash(uuid(), 10);
+
+        const newUser = new Patient();
+        newUser.name = patient_name;
+        newUser.role = Role.PATIENT;
+        newUser.password = hashPassword;
+        const createdUser = await this.userRepository.save(newUser);
+
+        const consulta = new Consulta();
+        consulta.patient = createdUser;
         Object.assign(consulta, consultaInfo);
         const createdConsulta = await this.consultaRepository.save(consulta);
         consultasImportadas.push(createdConsulta);
