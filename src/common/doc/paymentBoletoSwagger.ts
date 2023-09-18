@@ -17,9 +17,11 @@ class DivisaoDTO {
 
   @ApiProperty()
   @IsNumber()
+  @IsOptional()
   valordivisao: number;
 
   @ApiProperty()
+  @IsOptional()
   @IsNumber()
   emitenotaourecibo: number;
 
