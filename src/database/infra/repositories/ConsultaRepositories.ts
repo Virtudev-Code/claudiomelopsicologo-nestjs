@@ -93,7 +93,7 @@ export class ConsultaRepository implements IConsultaRepository {
       });
 
       if (getConsulta) {
-        throw new BadRequestException('Consulta existente');
+        continue;
       }
 
       if (!getConsulta) {
