@@ -30,7 +30,7 @@ export class PaymentService {
       appointment_id,
     );
 
-    const URL_PAYMENT_CONTSELF = `http://apphml.contself.com.br/ApiEcommerce/SolicitaPagamentoTransparente?ChavePessoa=${process.env.CHAVE_PESSOA}&chaveERP=${appointment.chaveERP}`;
+    const URL_PAYMENT_CONTSELF = `https://app.contself.com.br/ApiEcommerce/SolicitaPagamentoTransparente?ChavePessoa=${process.env.CHAVE_PESSOA}&chaveERP=${appointment.chaveERP}`;
 
     let AuthToken: any;
 
@@ -41,7 +41,7 @@ export class PaymentService {
 
     try {
       const response = await axios.post(
-        'http://apphml.contself.com.br/ApiMobile/Login',
+        'https://app.contself.com.br/ApiMobile/Login',
         LoginUser,
       );
 
@@ -140,7 +140,7 @@ export class PaymentService {
       throw new BadRequestException('Appointment do not exists');
     }
 
-    const URL_INQUIRY_CONTSELF = `http://apphml.contself.com.br/ApiEcommerce/ConsultaPagamento?&ChavePessoa=${process.env.CHAVE_PESSOA}&ChaveERP=${findAppointment.chaveERP}`;
+    const URL_INQUIRY_CONTSELF = `https://app.contself.com.br/ApiEcommerce/ConsultaPagamento?&ChavePessoa=${process.env.CHAVE_PESSOA}&ChaveERP=${findAppointment.chaveERP}`;
 
     const AuthToken = `fKW9LXv8BJBCVFuZvO3q6uh1YV/5NhEjvbUa1kLHj4LqWhZFZhlVFVEZRlk8PRyt`;
 
