@@ -21,6 +21,7 @@ import {
 } from 'src/common/doc/paymentSwagger';
 import { PaymentService } from 'src/service/payment.service';
 import Patient from 'src/database/typeorm/Patient.entities';
+import { ClienteDTO } from 'src/common/doc/paymentBoletoSwagger';
 
 @ApiTags(Routes.PAYMENT)
 @Controller(Routes.PAYMENT)
@@ -112,7 +113,7 @@ export class PaymentController {
   async emiteBoleto(
     @LoggedUser() user: Patient,
     @Param('id') id: string,
-    @Body() data: any,
+    @Body() data: ClienteDTO,
   ) {
     return await this.paymentService.emiteBoleto(user.id, id, data);
   }

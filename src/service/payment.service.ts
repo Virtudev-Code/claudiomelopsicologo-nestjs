@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios, { AxiosResponse } from 'axios';
-import { URL_PAYMENT_CONTSELF } from 'src/common/constant/constants';
+import { ClienteDTO } from 'src/common/doc/paymentBoletoSwagger';
 import { PaymentSwagger } from 'src/common/doc/paymentSwagger';
 import Consulta, { TypePayment } from 'src/database/typeorm/Consulta.entities';
 import Transacao from 'src/database/typeorm/Transacao.entities';
@@ -30,7 +30,25 @@ export class PaymentService {
       appointment_id,
     );
 
-    const AuthToken = `fKW9LXv8BJBCVFuZvO3q6uh1YV/5NhEjvbUa1kLHj4LqWhZFZhlVFVEZRlk8PRyt`;
+    const URL_PAYMENT_CONTSELF = `http://apphml.contself.com.br/ApiEcommerce/SolicitaPagamentoTransparente?ChavePessoa=${process.env.CHAVE_PESSOA}&chaveERP=${appointment.chaveERP}`;
+
+    let AuthToken: any;
+
+    const LoginUser = {
+      username: process.env.USER_CONTSELF,
+      password: process.env.PASSWORD_CONTSELF,
+    };
+
+    try {
+      const response = await axios.post(
+        'http://apphml.contself.com.br/ApiMobile/Login',
+        LoginUser,
+      );
+
+      AuthToken = response.data;
+    } catch (error) {
+      throw new error();
+    }
 
     const headers = {
       'Content-Type': 'application/json',
@@ -267,7 +285,7 @@ export class PaymentService {
     return appointment;
   }
 
-  async emiteBoleto(user_id: string, appointment_id: string, data: any) {
+  async emiteBoleto(user_id: string, appointment_id: string, data: ClienteDTO) {
     const appointment = await this.findAppointmentStatus(
       user_id,
       appointment_id,
@@ -306,16 +324,9 @@ export class PaymentService {
       nomebeneficiario: data.nomebeneficiario,
       cpfbeneficiario: data.cpfbeneficiario,
       listadivisao: data.listadivisao,
-      permitepagamentocartao: data.permitepagamentocartao,
-      permitepagamentoboleto: data.permitepagamentoboleto,
-      permitepagamentodebito: data.permitepagamentodebito,
-      permitepagamentopix: data.permitepagamentopix,
-      tokenizacartao: data.tokenizacartao,
-      cartaonome: data.cartaonome,
-      cartaonumero: data.cartaonumero,
-      cartaovencimento: data.cartaovencimento,
-      cartaocodigoseguranca: data.cartaocodigoseguranca,
-      ippagamento: data.ippagamento,
+      boleto_datavencimento: data.boleto_datavencimento,
+      boleto_taxamulta: data.boleto_taxamulta,
+      boleto_taxamora: data.boleto_taxamora,
     };
 
     try {

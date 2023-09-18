@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import Consulta from 'src/database/typeorm/Consulta.entities';
@@ -77,13 +81,20 @@ export class ConsultaRepository implements IConsultaRepository {
 
       const getConsulta = await this.consultaRepository.findOne({
         where: {
+          patient: {
+            name: patient_name,
+          },
           convenio: consultaInfo.convenio,
-          patient_name,
           servicos: consultaInfo.servicos,
           date: consultaInfo.data,
           preco: consultaInfo.preco,
         },
+        relations: ['patient'],
       });
+
+      if (getConsulta) {
+        throw new BadRequestException('Consulta existente');
+      }
 
       if (!getConsulta) {
         const consulta = new Consulta();

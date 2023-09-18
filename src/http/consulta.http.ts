@@ -22,10 +22,10 @@ import { Routes } from 'src/common/constant/constants';
 import { ConsultaService } from 'src/service/consulta.service';
 import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
 import { RolesGuard } from 'src/common/guards/auth.guard';
-import * as ExcelJS from 'exceljs';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { Role } from 'src/common/enum/enum';
 import { parse } from 'date-fns';
+import * as ExcelJS from 'exceljs';
 
 @ApiTags(Routes.CONSULTA)
 @Controller(Routes.CONSULTA)
@@ -33,65 +33,10 @@ import { parse } from 'date-fns';
 export class ConsultaController {
   constructor(private readonly consultaService: ConsultaService) {}
 
-  // @UsePipes(ValidationPipe)
-  // @UseGuards(AccessTokenGuard, RolesGuard)
-  // @Roles(Role.ADMIN)
-  // @Post('upload')
-  // @Bind(UploadedFiles())
-  // @ApiBody({ type: createConsultaSwagger })
-  // @ApiConsumes('multipart/form-data')
-  // @ApiOperation({
-  //   summary: 'Cria um agendamento pelo arquivo Excel.',
-  // })
-  // @UseInterceptors(AnyFilesInterceptor())
-  // async uploadFile(files: any) {
-  //   const uploadedFile = files[0];
-
-  //   const workbook = new ExcelJS.Workbook();
-  //   await workbook.xlsx.load(uploadedFile.buffer);
-
-  //   const worksheet = workbook.getWorksheet(1);
-  //   const consultasImportadas = [];
-
-  //   worksheet.eachRow((row, rowNumber) => {
-  //     if (rowNumber !== 1) {
-  //       const dateCell = row.getCell('A');
-  //       const date =
-  //         dateCell && dateCell.value
-  //           ? parse(dateCell.toString(), 'dd/MM/yyyy', new Date())
-  //           : null;
-  //       const precoCell = row.getCell('E');
-  //       const preco =
-  //         precoCell && precoCell.value
-  //           ? parseFloat(precoCell.toString().replace(',', '.'))
-  //           : null;
-  //       const consulta = {
-  //         date,
-  //         patient_name: row.getCell('B').toString(),
-  //         servicos: row.getCell('C').toString(),
-  //         convenio: row.getCell('D').toString(),
-  //         preco,
-  //         estado: row.getCell('G').toString(),
-  //         comentarios: row.getCell('H').toString(),
-  //         situacaoDoPagamento: false,
-  //       };
-  //       consultasImportadas.push(consulta);
-  //     }
-  //   });
-
-  //   const createdConsultas = await this.consultaService.createConsultas(
-  //     consultasImportadas,
-  //   );
-
-  //   return {
-  //     createdConsultas,
-  //   };
-  // }
-
+  //@ApiBody({ type: createConsultaSwagger })
   @UsePipes(ValidationPipe)
   @Post('upload')
   @Bind(UploadedFiles())
-  //@ApiBody({ type: createConsultaSwagger })
   @ApiConsumes('multipart/form-data')
   @ApiOperation({
     summary: 'Cria um agendamento pelo arquivo Excel.',
