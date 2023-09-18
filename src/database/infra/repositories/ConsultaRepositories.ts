@@ -77,6 +77,10 @@ export class ConsultaRepository implements IConsultaRepository {
         consulta.patient = user;
         Object.assign(consulta, consultaInfo);
         const createdConsulta = await this.consultaRepository.save(consulta);
+        delete createdConsulta.patient.accepted;
+        delete createdConsulta.patient.is_first_time;
+        delete createdConsulta.patient.active;
+        delete createdConsulta.patient.refreshToken;
         consultasImportadas.push(createdConsulta);
       }
 
@@ -93,6 +97,10 @@ export class ConsultaRepository implements IConsultaRepository {
         consulta.patient = createdUser;
         Object.assign(consulta, consultaInfo);
         const createdConsulta = await this.consultaRepository.save(consulta);
+        delete createdConsulta.patient.accepted;
+        delete createdConsulta.patient.is_first_time;
+        delete createdConsulta.patient.active;
+        delete createdConsulta.patient.refreshToken;
         consultasImportadas.push(createdConsulta);
       }
     }

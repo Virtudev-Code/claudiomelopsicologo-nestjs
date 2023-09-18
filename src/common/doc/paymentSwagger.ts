@@ -3,7 +3,6 @@ import {
   IsArray,
   IsBoolean,
   IsEmpty,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -11,6 +10,7 @@ import {
 
 export class PaymentSwagger {
   @IsString()
+  @IsOptional()
   @ApiProperty({
     description: 'URL for redirect after payment',
     example: '',
@@ -18,7 +18,7 @@ export class PaymentSwagger {
   urlretorno: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'ERP key',
     example: 's215',
@@ -26,7 +26,7 @@ export class PaymentSwagger {
   chaveerp: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Payment amount',
     example: '0,10',
@@ -34,7 +34,7 @@ export class PaymentSwagger {
   valor: string;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Number of installments',
     example: 1,
@@ -42,7 +42,7 @@ export class PaymentSwagger {
   numeroparcela: number;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Name of the payer',
     example: 'João Ferreira',
@@ -50,7 +50,7 @@ export class PaymentSwagger {
   nome: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: "Payer's identification (CPF)",
     example: '155.726.850-97',
@@ -58,7 +58,7 @@ export class PaymentSwagger {
   identificador: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: "Payer's email",
     example: 'venceslau@gmail.com',
@@ -175,7 +175,7 @@ export class PaymentSwagger {
   }>;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Allows credit card payment',
     example: '1',
@@ -183,7 +183,7 @@ export class PaymentSwagger {
   permitepagamentocartao: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Allows boleto payment',
     example: '0',
@@ -191,7 +191,7 @@ export class PaymentSwagger {
   permitepagamentoboleto: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Allows debit card payment',
     example: '1',
@@ -199,7 +199,7 @@ export class PaymentSwagger {
   permitepagamentodebito: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Allows PIX payment',
     example: '1',
@@ -207,7 +207,7 @@ export class PaymentSwagger {
   permitepagamentopix: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Card tokenization',
     example: '0',
@@ -215,7 +215,7 @@ export class PaymentSwagger {
   tokenizacartao: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Cardholder name',
     example: 'Joao Ferreira',
@@ -223,7 +223,7 @@ export class PaymentSwagger {
   cartaonome: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Card number',
     example: '5362859291999142',
@@ -231,7 +231,7 @@ export class PaymentSwagger {
   cartaonumero: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Card expiration date',
     example: '01/28',
@@ -239,7 +239,7 @@ export class PaymentSwagger {
   cartaovencimento: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Card security code',
     example: '848',
@@ -247,7 +247,7 @@ export class PaymentSwagger {
   cartaocodigoseguranca: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'IP address of the payer',
     example: '187.20.141.134',
@@ -257,7 +257,7 @@ export class PaymentSwagger {
 
 export class StatusPaymentSwagger {
   @IsBoolean()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'Booleano ser true o false dependendo do status',
     example: true,

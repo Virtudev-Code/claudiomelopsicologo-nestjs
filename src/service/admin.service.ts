@@ -3,7 +3,6 @@ import { createPatientSwagger } from 'src/common/doc/createPatientSwagger';
 import Patient from 'src/database/typeorm/Patient.entities';
 import { AdminRepository } from 'src/database/infra/repositories/AdminRepositories';
 import { updatePatientSwagger } from 'src/common/doc/updatePatientSwagger';
-import { UpdateUser } from 'src/common/types/types';
 import { createAdminSwagger } from 'src/common/doc/createAdminSwagger';
 
 @Injectable()
@@ -62,6 +61,12 @@ export class AdminService {
   }: any): Promise<Patient> {
     if (!patient.email) {
       throw new BadRequestException('User email do not exist');
+    }
+
+    const user = await this.adminRepository.findPatientByEmail(patient.email);
+
+    if (user) {
+      throw new BadRequestException('Já existe um paciente com esse e-mail');
     }
 
     return await this.adminRepository.updatePatientWithoutEmail({
