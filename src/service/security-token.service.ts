@@ -25,11 +25,21 @@ export class SecurityTokenService {
 
     const securityToken = await this.securityTokenRepository.generate(user.id);
 
-    await this.mailerService.sendRecoverPassord(
+    await this.mailerService.recoverPassword(
       user.name,
       user.email,
       securityToken.token,
     );
+  }
+
+  async firstAccess({ email }: IEmail): Promise<void> {
+    const user = await this.securityTokenRepository.findUserByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException('User does not exist.');
+    }
+
+    await this.mailerService.sendRecoverPassword(user.name, user.email);
   }
 
   async resetPassword({ token, password }: IReset): Promise<void> {

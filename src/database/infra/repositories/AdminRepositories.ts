@@ -130,7 +130,7 @@ export class AdminRepository {
 
     const updatedPatient = await this.adminRepository.save(user);
 
-    await this.mailerService.updateEmailByAdmin(user.name, user.email);
+    await this.mailerService.sendRecoverPassword(user.name, user.email);
 
     return updatedPatient;
   }

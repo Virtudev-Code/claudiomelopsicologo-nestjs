@@ -16,7 +16,23 @@ export class MailService {
     SendGrid.setApiKey(this.configService.get<string>('SEND_GRID_KEY'));
   }
 
-  async updateEmailByAdmin(name: string, email: string) {
+  // async updateEmailByAdmin(name: string, email: string) {
+  //   const templatePath = path.join(__dirname, 'templates/updated-email.hbs');
+  //   const templateSource = fs.readFileSync(templatePath, 'utf8');
+  //   const template = handlebars.compile(templateSource);
+  //   const html = template({ name, email });
+
+  //   const msg = {
+  //     to: email,
+  //     from: `"No Reply" <${process.env.MAIL_FROM}>`,
+  //     subject: 'Psicólogo - Dados de acesso',
+  //     html,
+  //   };
+
+  //   await SendGrid.send(msg);
+  // }
+
+  async sendRecoverPassword(name: string, email: string) {
     const templatePath = path.join(__dirname, 'templates/updated-email.hbs');
     const templateSource = fs.readFileSync(templatePath, 'utf8');
     const template = handlebars.compile(templateSource);
@@ -25,14 +41,14 @@ export class MailService {
     const msg = {
       to: email,
       from: `"No Reply" <${process.env.MAIL_FROM}>`,
-      subject: 'Psicólogo - Dados de acesso',
+      subject: 'Claudio Melo - Psicólogo',
       html,
     };
 
     await SendGrid.send(msg);
   }
 
-  async sendRecoverPassord(name: string, email: string, token: string) {
+  async recoverPassword(name: string, email: string, token: string) {
     const templatePath = path.join(__dirname, 'templates/recover-password.hbs');
     const templateSource = fs.readFileSync(templatePath, 'utf8');
     const template = handlebars.compile(templateSource);
@@ -41,22 +57,10 @@ export class MailService {
     const msg = {
       to: email,
       from: `"No Reply" <${process.env.MAIL_FROM}>`,
-      subject: 'Telemedicina - Change your Password',
+      subject: 'Claudio Melo - Recuperação de senha',
       html,
     };
 
     await SendGrid.send(msg);
-  }
-
-  async recoverPassord(email: string, token: string): Promise<void> {
-    await this.mailerService.sendMail({
-      to: email,
-      from: `"No Reply" <${process.env.MAIL_FROM}>`,
-      subject: 'Change your Passord',
-      template: './recover-password', // `.hbs` extension is appended automatically
-      context: {
-        token,
-      },
-    });
   }
 }

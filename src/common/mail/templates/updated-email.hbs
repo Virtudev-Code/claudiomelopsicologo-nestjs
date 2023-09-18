@@ -1,35 +1,36 @@
 <html>
   <head>
-    <title>Informações de Acesso</title>
+    <title>Primeiro Acesso</title>
     <style>
       body { font-family: Arial, sans-serif; background-color: #F0F5F9; margin:
       0; padding: 0; } .container { max-width: 600px; margin: 0 auto; padding:
       20px; background-color: #FFFFFF; border-radius: 5px; box-shadow: 0 2px 5px
       rgba(0, 0, 0, 0.1); } .header { text-align: center; margin-bottom: 30px; }
-      .header h1 { color: #2979FF; margin: 0; font-size: 24px; font-weight: 600;
-      } .content { color: #444444; font-size: 16px; line-height: 1.5; } .button
+      .header h1 { color: #7882B4; margin: 0; font-size: 24px; font-weight: 600;
+      } .content { color: #000; font-size: 16px; line-height: 1.5; } .button
       { display: inline-block; margin-top: 30px; margin-bottom: 30px; } .button
-      a { background-color: #2979FF; color: #FFFFFF; text-decoration: none;
+      a { background-color: #7882B4; color: #FFFFFF; text-decoration: none;
       font-size: 16px; font-weight: 600; padding: 12px 20px; border-radius: 5px;
-      } .button a:hover { background-color: #2962FF; } .footer { text-align:
+      } .button a:hover { background-color: #7882B4; } .footer { text-align:
       center; margin-top: 30px; color: #777777; font-size: 14px; }
     </style>
   </head>
   <body>
     <div class='container'>
       <div class='header'>
-        <h1>Sua conta</h1>
+        <h1>Primeiro Acesso</h1>
       </div>
       <div class='content'>
         <p>Olá, {{name}}!</p>
-        <p>Você já pode acessar a plataforma com, Só precisa atualizar sua
-          senha no link a seguir:</p>
+        <p>Este é seu e-mail de acesso, {{email}}</p>
+        <p>Por favor, altere sua senha para seguir utilizando a aplicação. Clique
+          no botão abaixo para solicitar a alteração de senha:</p>
         <div class='button'>
           <a
-            href='http://localhost:3000/forgot-password/{{email}}'
+            href='https://main.d1qoyldf4pppqd.amplifyapp.com/forgot-password'
             target='_blank'
             rel='noopener noreferrer'
-          >Pedir nova senha</a>
+          >Solicitar Alteração</a>
         </div>
       </div>
       <div class='footer'>
