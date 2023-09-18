@@ -67,55 +67,55 @@ export class PaymentSwagger {
   @IsString()
   @IsOptional()
   @ApiProperty({
-    description: '',
-    example: '',
+    description: "Payer's phone number",
+    example: '31994553025',
   })
   telefone: string;
 
   @IsString()
   @IsOptional()
   @ApiProperty({
-    description: '',
-    example: '',
+    description: 'State',
+    example: 'MG',
   })
   uf: string;
 
   @IsString()
   @IsOptional()
   @ApiProperty({
-    description: '',
-    example: '',
+    description: 'City',
+    example: 'Belo Horizonte',
   })
   cidade: string;
 
   @IsString()
   @IsOptional()
   @ApiProperty({
-    description: '',
-    example: '',
+    description: 'Street name',
+    example: 'Rua Alagoas',
   })
   logradouro: string;
 
   @IsString()
   @IsOptional()
   @ApiProperty({
-    description: '',
-    example: '',
+    description: 'Neighborhood',
+    example: 'Centro',
   })
   bairro: string;
 
   @IsString()
   @IsOptional()
   @ApiProperty({
-    description: '',
-    example: '',
+    description: 'Street number',
+    example: '455',
   })
   numero: string;
 
-  @IsOptional()
+  @IsString()
   @IsOptional()
   @ApiProperty({
-    description: '',
+    description: 'Additional address info',
     example: null,
   })
   complemento: string | null;
@@ -123,8 +123,8 @@ export class PaymentSwagger {
   @IsString()
   @IsOptional()
   @ApiProperty({
-    description: '',
-    example: '',
+    description: 'Postal code (CEP)',
+    example: '30130-160',
   })
   cep: string;
 
