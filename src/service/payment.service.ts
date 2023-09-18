@@ -1,10 +1,12 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { ClienteDTO } from 'src/common/doc/paymentBoletoSwagger';
 import { PaymentSwagger } from 'src/common/doc/paymentSwagger';
 import Consulta, { TypePayment } from 'src/database/typeorm/Consulta.entities';
@@ -45,7 +47,7 @@ export class PaymentService {
         LoginUser,
       );
 
-      AuthToken = response.data;
+      AuthToken = response.data.Token;
     } catch (error) {
       throw new error();
     }
@@ -86,6 +88,8 @@ export class PaymentService {
       ippagamento: data.ippagamento,
     };
 
+    console.log(paymentPayload);
+
     try {
       const response = await axios.post(URL_PAYMENT_CONTSELF, paymentPayload, {
         headers,
@@ -117,11 +121,19 @@ export class PaymentService {
 
           return result;
         } catch (error) {
-          throw error;
+          console.log('1', error);
+
+          throw error.message;
         }
       }
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw new HttpException(
+        {
+          error: 'Erro ao processar pagamento',
+          message: error?.response?.data,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR, // Use o código de status HTTP apropriado
+      );
     }
   }
 

@@ -20,6 +20,7 @@ async function bootstrap() {
     origin: function (origin, callback) {
       const whitelist = [
         'http://localhost:3000',
+        'http://localhost:3333',
         'https://main.d1qoyldf4pppqd.amplifyapp.com',
       ];
 

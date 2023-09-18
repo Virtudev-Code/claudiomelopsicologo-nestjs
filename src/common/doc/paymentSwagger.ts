@@ -20,17 +20,17 @@ export class PaymentSwagger {
   @IsOptional()
   @ApiProperty({
     description: 'ERP key',
-    example: 's215',
+    example: '',
   })
   chaveerp: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
   @ApiProperty({
     description: 'Payment amount',
-    example: 0.1,
+    example: '0,01',
   })
-  valor: number;
+  valor: string;
 
   @IsNumber()
   @IsOptional()
@@ -116,7 +116,7 @@ export class PaymentSwagger {
   @IsOptional()
   @ApiProperty({
     description: '',
-    example: '',
+    example: null,
   })
   complemento: string | null;
 
@@ -150,55 +150,54 @@ export class PaymentSwagger {
     description: 'List of divisions',
     example: [],
   })
-  listadivisao:
-    | Array<{
-        identificador: string;
-        identificadorsocio: string | null;
-        valordivisao: number;
-        nomeServico: string;
-        emitenotaourecibo: number;
-      }>
-    | [];
+  listadivisao: [];
+  //Array<{
+  //   identificador: string | null;
+  //   identificadorsocio: string | null;
+  //   valordivisao: number | null;
+  //   nomeServico: string | null;
+  //   emitenotaourecibo: number | null;
+  // }>;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
   @ApiProperty({
     description: 'Allows credit card payment',
     example: 1,
   })
-  permitepagamentocartao: number;
+  permitepagamentocartao: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
   @ApiProperty({
     description: 'Allows boleto payment',
-    example: 0,
+    example: '0',
   })
-  permitepagamentoboleto: number;
+  permitepagamentoboleto: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
   @ApiProperty({
     description: 'Allows debit card payment',
-    example: 1,
+    example: '1',
   })
-  permitepagamentodebito: number;
+  permitepagamentodebito: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
   @ApiProperty({
     description: 'Allows PIX payment',
-    example: 1,
+    example: '1',
   })
-  permitepagamentopix: number;
+  permitepagamentopix: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
   @ApiProperty({
     description: 'Card tokenization',
-    example: 0,
+    example: '0',
   })
-  tokenizacartao: number;
+  tokenizacartao: string;
 
   @IsString()
   @IsOptional()
