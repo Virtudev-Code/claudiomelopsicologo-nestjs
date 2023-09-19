@@ -138,7 +138,7 @@ export class PatientController {
 
   @Put('update-email/:idPatient')
   @UseGuards(AccessTokenGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.PATIENT)
   @ApiOperation({
     summary: 'Atualiza o email do paciente',
   })
