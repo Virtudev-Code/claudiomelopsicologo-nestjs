@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoggedUser } from 'src/common/decorators/user.decorator';
-import { Throttle } from '@nestjs/throttler';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { Routes } from 'src/common/constant/constants';
 import { RolesGuard } from 'src/common/guards/auth.guard';
 import { Role } from 'src/common/enum/enum';
@@ -29,7 +29,8 @@ import { ClienteDTO } from 'src/common/doc/paymentBoletoSwagger';
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  @Throttle(30, 60) // Permite no máximo 30 solicitações a cada 60 segundos
+  // @Throttle(30, 60) // Permite no máximo 30 solicitações a cada 60 segundos
+  @SkipThrottle(true)
   @Post('/makePay/:appointment_id')
   @Roles(Role.PATIENT)
   @UseGuards(AccessTokenGuard, RolesGuard)
@@ -74,7 +75,8 @@ export class PaymentController {
     return this.paymentService.cancelPay(user.id, patient_id);
   }
 
-  @Throttle(30, 60)
+  // @Throttle(30, 60)
+  @SkipThrottle(true)
   @Put('/update-status-payment/:appointment_id/:user_id')
   @Roles(Role.ADMIN)
   @UseGuards(AccessTokenGuard, RolesGuard)
