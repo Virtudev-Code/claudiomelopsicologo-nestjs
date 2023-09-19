@@ -48,7 +48,7 @@ export class createConsultaSwagger {
     description: 'Situação do pagamento da consulta',
     example: 'Pago',
   })
-  situacaoDoPagamento: string;
+  situacaoDoPagamento: boolean;
 
   @IsString()
   @IsNotEmpty()

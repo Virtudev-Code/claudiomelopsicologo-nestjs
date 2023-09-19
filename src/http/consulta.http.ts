@@ -59,6 +59,14 @@ export class ConsultaController {
         continue;
       }
 
+      let pagamento: any;
+
+      if (row.getCell(6).value === 'Pago') {
+        pagamento = true;
+      } else {
+        pagamento = false;
+      }
+
       const dataCellString = dataCellValue.toString();
       const date = parse(dataCellString, 'dd/MM/yyyy', new Date());
 
@@ -68,7 +76,7 @@ export class ConsultaController {
         servicos: row.getCell(3).value,
         convenio: row.getCell(4).value,
         preco: row.getCell(5).value,
-        pagamento: row.getCell(6).value,
+        pagamento,
         estado: row.getCell(7).value,
         comentarios: row.getCell(8).value,
       };
