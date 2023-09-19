@@ -21,6 +21,8 @@ async function bootstrap() {
       const whitelist = [
         'http://localhost:3000',
         'http://localhost:3333',
+        'https://sistema.claudiomelopsicologo.com.br',
+        'https://claudiomelopsicologo.virtudev.com.br',
         'https://main.d1qoyldf4pppqd.amplifyapp.com',
         'https://fenix.virtudev.com.br',
       ];
