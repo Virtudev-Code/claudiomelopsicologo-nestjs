@@ -85,19 +85,6 @@ export class AdminController {
     return await this.adminService.getAllPatients();
   }
 
-  @Put('update-email/:idPatient')
-  @UseGuards(AccessTokenGuard, RolesGuard)
-  @Roles(Role.ADMIN)
-  @ApiOperation({
-    summary: 'Atualiza o email do paciente',
-  })
-  async updatePatient(
-    @Body() data: updateEmailSwagger,
-    @Param('idPatient') idPatient: string,
-  ) {
-    return this.patientService.updateEmailPatient(idPatient, data);
-  }
-
   // @Put('/update-patient/:id')
   // @UseGuards(AccessTokenGuard, RolesGuard)
   // @Roles(Role.ADMIN)

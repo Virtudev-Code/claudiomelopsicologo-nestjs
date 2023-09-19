@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Routes } from 'src/common/constant/constants';
 import { PatientService } from 'src/service/patient.service';
@@ -9,6 +9,7 @@ import { Roles } from 'src/common/decorators/role.decorator';
 import Consulta from 'src/database/typeorm/Consulta.entities';
 import { LoggedUser } from 'src/common/decorators/user.decorator';
 import Patient from 'src/database/typeorm/Patient.entities';
+import { updateEmailSwagger } from 'src/common/doc/updatePatientSwagger';
 
 @ApiTags(Routes.PATIENT)
 @Controller(Routes.PATIENT)
@@ -133,5 +134,18 @@ export class PatientController {
       month,
       year,
     });
+  }
+
+  @Put('update-email/:idPatient')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.PATIENT)
+  @ApiOperation({
+    summary: 'Atualiza o email do paciente',
+  })
+  async updatePatient(
+    @Body() data: updateEmailSwagger,
+    @Param('idPatient') idPatient: string,
+  ) {
+    return this.patientService.updateEmailPatient(idPatient, data);
   }
 }
