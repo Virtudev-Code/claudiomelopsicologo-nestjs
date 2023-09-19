@@ -22,6 +22,7 @@ async function bootstrap() {
         'http://localhost:3000',
         'http://localhost:3333',
         'https://main.d1qoyldf4pppqd.amplifyapp.com',
+        'https://fenix.virtudev.com.br',
       ];
 
       if (whitelist.indexOf(origin) !== -1 || !origin) {
