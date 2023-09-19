@@ -16,23 +16,8 @@ async function bootstrap() {
   // Habilitando o CORS na aplicação
   app.enableCors({
     credentials: true,
-    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept',
-    origin: function (origin, callback) {
-      const whitelist = [
-        'http://localhost:3000',
-        'http://localhost:3333',
-        'https://sistema.claudiomelopsicologo.com.br',
-        'https://claudiomelopsicologo.virtudev.com.br',
-        'https://main.d1qoyldf4pppqd.amplifyapp.com',
-        'https://fenix.virtudev.com.br',
-      ];
-
-      if (whitelist.indexOf(origin) !== -1 || !origin) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    allowedHeaders: '*',
+    origin: '*',
   });
 
   // Adicionando o ValidationPipe global à aplicação
