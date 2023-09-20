@@ -373,7 +373,7 @@ export class PaymentService {
 
     const paymentPayload: ClienteDTO = {
       urlretorno: ``,
-      chavepessoa: process.env.chaveERP,
+      chavepessoa: process.env.CHAVE_PESSOA,
       chaveerp: appointment.chaveERP,
       valor: data.valor,
       numeroparcela: data.numeroparcela,

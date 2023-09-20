@@ -106,7 +106,7 @@ export class PaymentController {
     console.log(data);
   }
 
-  @Post('/emiteBoleto')
+  @Post('/emiteBoleto/:id')
   @Roles(Role.PATIENT)
   @UseGuards(AccessTokenGuard, RolesGuard)
   @ApiOperation({
