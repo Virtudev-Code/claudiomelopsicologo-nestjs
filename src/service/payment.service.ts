@@ -212,7 +212,7 @@ export class PaymentService {
       const transacaoData: AxiosResponse = response.data;
 
       if (transacaoData) {
-        return response.data;
+        return response.data.descricaoStatusTransacao;
       }
     } catch (error) {
       throw error;
