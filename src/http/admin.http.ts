@@ -31,14 +31,14 @@ export class AdminController {
     private readonly patientService: PatientService,
   ) {}
 
-  @UsePipes(ValidationPipe)
-  @Post('/creat-admin')
-  @ApiOperation({
-    summary: 'Cria um Paciente através do Admin Autenticado',
-  })
-  async createAdmin(@Body() data: createAdminSwagger): Promise<Patient> {
-    return await this.adminService.createAdmin(data);
-  }
+  // @UsePipes(ValidationPipe)
+  // @Post('/creat-admin')
+  // @ApiOperation({
+  //   summary: 'Cria um Paciente através do Admin Autenticado',
+  // })
+  // async createAdmin(@Body() data: createAdminSwagger): Promise<Patient> {
+  //   return await this.adminService.createAdmin(data);
+  // }
 
   @UsePipes(ValidationPipe)
   @UseGuards(AccessTokenGuard, RolesGuard)
