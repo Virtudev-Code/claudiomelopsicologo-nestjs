@@ -50,7 +50,7 @@ export class PaymentController {
     return payment;
   }
 
-  @Post('/paymentInquiry/:id')
+  @Get('/paymentInquiry/:id')
   @Roles(Role.PATIENT)
   @UseGuards(AccessTokenGuard, RolesGuard)
   @ApiOperation({
@@ -61,18 +61,18 @@ export class PaymentController {
     return await this.paymentService.paymentInquiry(user.id, id);
   }
 
-  @Get('/cancelPay/:id')
-  @UseGuards(AccessTokenGuard, RolesGuard)
-  @Roles(Role.PATIENT)
-  @ApiOperation({
-    summary: 'Cancela o Pagamento de um Agendamento',
-  })
-  async cancelPay(
-    @LoggedUser() user: Patient,
-    @Param('id') patient_id: string,
-  ) {
-    return this.paymentService.cancelPay(user.id, patient_id);
-  }
+  // @Get('/cancelPay/:id')
+  // @UseGuards(AccessTokenGuard, RolesGuard)
+  // @Roles(Role.PATIENT)
+  // @ApiOperation({
+  //   summary: 'Cancela o Pagamento de um Agendamento',
+  // })
+  // async cancelPay(
+  //   @LoggedUser() user: Patient,
+  //   @Param('id') patient_id: string,
+  // ) {
+  //   return this.paymentService.cancelPay(user.id, patient_id);
+  // }
 
   @Throttle(30, 60)
   @Put('/update-status-payment/:appointment_id/:user_id')
