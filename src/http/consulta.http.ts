@@ -61,6 +61,14 @@ export class ConsultaController {
 
       let pagamento: any;
 
+      console.log('====================================');
+      console.log('oq vem aqui row.getCell -->', row.getCell(6).value);
+      console.log('====================================');
+
+      console.log('====================================');
+      console.log('oq vem aqui status-->', row.getCell(6).value === 'Pago');
+      console.log('====================================');
+
       if (row.getCell(6).value === 'Pago') {
         pagamento = true;
       } else {
