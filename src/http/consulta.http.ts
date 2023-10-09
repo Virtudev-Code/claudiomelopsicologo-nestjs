@@ -26,6 +26,8 @@ import { Roles } from 'src/common/decorators/role.decorator';
 import { Role } from 'src/common/enum/enum';
 import { parse } from 'date-fns';
 import * as ExcelJS from 'exceljs';
+import { utcToZonedTime } from 'date-fns-tz';
+const saoPauloTimeZone = 'America/Sao_Paulo';
 
 @ApiTags(Routes.CONSULTA)
 @Controller(Routes.CONSULTA)
@@ -76,7 +78,15 @@ export class ConsultaController {
       }
 
       const dataCellString = dataCellValue.toString();
-      const date = parse(dataCellString, 'dd/MM/yyyy', new Date());
+
+      console.log('====================================');
+      console.log('data que vem da planilha -->', dataCellString);
+      console.log('====================================');
+      const date = parse(
+        dataCellString,
+        'dd/MM/yyyy',
+        utcToZonedTime(new Date(), saoPauloTimeZone),
+      );
 
       const value = {
         date,
@@ -88,6 +98,10 @@ export class ConsultaController {
         estado: row.getCell(7).value,
         comentarios: row.getCell(8).value,
       };
+
+      console.log('====================================');
+      console.log('data -->', value);
+      console.log('====================================');
 
       consulta.push(value);
     }

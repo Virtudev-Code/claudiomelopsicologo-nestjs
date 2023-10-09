@@ -15,6 +15,8 @@ import {
   IRequestMonthPatient,
 } from 'src/common/types/types';
 import { endOfDay, startOfDay, isBefore } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
+const saoPauloTimeZone = 'America/Sao_Paulo';
 
 @Injectable()
 export class ConsultaRepository implements IConsultaRepository {
@@ -31,17 +33,27 @@ export class ConsultaRepository implements IConsultaRepository {
     const consultasImportadas = [];
 
     for (const consultaData of consultasData) {
-      const appointmentDate = new Date(consultaData.data);
+      const appointmentDate = utcToZonedTime(
+        new Date(consultaData.data),
+        saoPauloTimeZone,
+      );
 
-      if (isBefore(appointmentDate, Date.now())) {
+      if (
+        isBefore(appointmentDate, utcToZonedTime(Date.now(), saoPauloTimeZone))
+      ) {
         throw handleError(new Error('Agendamentos com datas passadas'));
       }
     }
 
     for (const consultaData of consultasData) {
-      const appointmentDate = new Date(consultaData.data);
+      const appointmentDate = utcToZonedTime(
+        new Date(consultaData.data),
+        saoPauloTimeZone,
+      );
 
-      if (isBefore(appointmentDate, Date.now())) {
+      if (
+        isBefore(appointmentDate, utcToZonedTime(Date.now(), saoPauloTimeZone))
+      ) {
         throw handleError(new Error('Agendamentos com datas passadas'));
       }
     }
