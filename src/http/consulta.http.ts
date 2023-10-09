@@ -62,6 +62,7 @@ export class ConsultaController {
       }
 
       let pagamento: any;
+      let situacaoDoPagamento: any;
 
       console.log('====================================');
       console.log('oq vem aqui row.getCell -->', row.getCell(6).value);
@@ -73,8 +74,10 @@ export class ConsultaController {
 
       if (row.getCell(6).value === 'Pago') {
         pagamento = true;
+        situacaoDoPagamento = true;
       } else {
         pagamento = false;
+        situacaoDoPagamento = false;
       }
 
       const dataCellString = dataCellValue.toString();
