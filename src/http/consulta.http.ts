@@ -98,6 +98,7 @@ export class ConsultaController {
         convenio: row.getCell(4).value,
         preco: row.getCell(5).value,
         pagamento,
+        situacaoDoPagamento,
         estado: row.getCell(7).value,
         comentarios: row.getCell(8).value,
       };
