@@ -86,6 +86,9 @@ export class ConsultaRepository implements IConsultaRepository {
 
       if (user) {
         const consulta = new Consulta();
+        console.log('====================================');
+        console.log('Tem usuário -->', consulta);
+        console.log('====================================');
         consulta.patient = user;
         Object.assign(consulta, consultaInfo);
         const createdConsulta = await this.consultaRepository.save(consulta);
@@ -106,6 +109,9 @@ export class ConsultaRepository implements IConsultaRepository {
         const createdUser = await this.userRepository.save(newUser);
 
         const consulta = new Consulta();
+        console.log('====================================');
+        console.log('não tem usuário -->', consulta);
+        console.log('====================================');
         consulta.patient = createdUser;
         Object.assign(consulta, consultaInfo);
         const createdConsulta = await this.consultaRepository.save(consulta);
