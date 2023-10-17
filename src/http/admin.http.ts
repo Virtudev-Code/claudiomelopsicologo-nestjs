@@ -8,6 +8,7 @@ import {
   Get,
   Put,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Routes } from 'src/common/constant/constants';
@@ -71,6 +72,17 @@ export class AdminController {
   })
   async getUserById(@Param('id') id: string): Promise<Patient> {
     return await this.adminService.findPatientById(id);
+  }
+
+  @Delete('/remove-patient/:id')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({
+    summary: 'Remove um Paciente pelo Id',
+    description: 'Esta Rota remove um Paciente pelo Id',
+  })
+  async removePatient(@Param('id') id: string): Promise<void> {
+    return await this.patientService.removePatient(id);
   }
 
   @Get('/find-patients')

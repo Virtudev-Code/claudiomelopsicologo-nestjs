@@ -2,6 +2,7 @@ import { Between, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createAddressSwagger } from 'src/common/doc/createAddressSwagger';
+import { v4 as uuid } from 'uuid';
 
 import Address from 'src/database/typeorm/Address.entities';
 
@@ -15,6 +16,7 @@ export class AddressRepository {
   async createAddress(data: createAddressSwagger): Promise<Address> {
     const address = new Address();
 
+    address.id = uuid();
     address.cep = data.cep;
     address.logradouro = data.logradouro;
     address.numero = data.numero;
@@ -22,6 +24,7 @@ export class AddressRepository {
     address.bairro = data.bairro;
     address.cidade = data.cidade;
     address.uf = data.uf;
+    address.patient_id = data.patient_id;
 
     const savedAddress = await this.addressRepository.save(address);
 

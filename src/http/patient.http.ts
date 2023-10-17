@@ -147,9 +147,23 @@ export class PatientController {
     });
   }
 
+  @Get('/patient-by-id')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.PATIENT)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Retorna todas as consultas do dia de um paciente',
+  })
+  async getPatientById(@LoggedUser() patient: Patient) {
+    const patient_id = patient.id;
+
+    return this.patientService.findPatientById(patient_id);
+  }
+
   @Put('update-email/:idPatient')
   @UseGuards(AccessTokenGuard, RolesGuard)
   @Roles(Role.PATIENT)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Atualiza o email do paciente',
   })
@@ -160,9 +174,10 @@ export class PatientController {
     return this.patientService.updateEmailPatient(idPatient, data);
   }
 
-  @Put(':idPatient')
+  @Put('update-patient/:idPatient')
   @UseGuards(AccessTokenGuard, RolesGuard)
   @Roles(Role.PATIENT)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Atualiza o dados do paciente',
   })
@@ -176,6 +191,7 @@ export class PatientController {
   @Delete('/:id')
   @UseGuards(AccessTokenGuard, RolesGuard)
   @Roles(Role.PATIENT)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Deleta um paciente',
   })
