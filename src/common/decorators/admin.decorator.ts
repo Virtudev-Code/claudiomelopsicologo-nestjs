@@ -10,6 +10,10 @@ export const LoggedAdmin = createParamDecorator((_, ctx: ExecutionContext) => {
 
   const user: Patient = request.user;
 
+  console.log('====================================');
+  console.log('oq vem aqui admin', user);
+  console.log('====================================');
+
   if (user.role !== 'admin') {
     throw new UnauthorizedException('User do not have permisssions!');
   }

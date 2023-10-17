@@ -112,11 +112,50 @@ export class PatientRepository {
     id: string,
     data: updatePatientSwagger,
   ): Promise<Patient> {
-    await this.patientRepository.update(id, data);
     const getAddress = await this.addressRepository.findAddressByPatientId(id);
 
-    if (!getAddress)
-      await this.addressRepository.updateAddress(data.address.id, data.address);
+    console.log('====================================');
+    console.log('getAddress', getAddress);
+    console.log('====================================');
+
+    if (!getAddress) {
+      const addAddress = await this.addressRepository.createAddress({
+        cep: data.address.cep,
+        logradouro: data.address.logradouro,
+        numero: data.address.numero,
+        complemento: data.address.complemento,
+        bairro: data.address.bairro,
+        cidade: data.address.cidade,
+        uf: data.address.uf,
+        patient_id: id,
+      });
+
+      await this.patientRepository.update(id, {
+        name: data.name,
+        telefone: data.telefone,
+        identificador: data.identificador,
+        email: data.email,
+        address_id: addAddress.id,
+      });
+    } else {
+      await this.addressRepository.updateAddress(getAddress.id, {
+        cep: data.address.cep,
+        logradouro: data.address.logradouro,
+        numero: data.address.numero,
+        complemento: data.address.complemento,
+        bairro: data.address.bairro,
+        cidade: data.address.cidade,
+        uf: data.address.uf,
+        patient_id: id,
+      });
+      await this.patientRepository.update(id, {
+        name: data.name,
+        telefone: data.telefone,
+        identificador: data.identificador,
+        email: data.email,
+        address_id: getAddress.id,
+      });
+    }
 
     return this.findPatientById(id);
   }
