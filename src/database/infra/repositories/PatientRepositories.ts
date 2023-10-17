@@ -113,7 +113,11 @@ export class PatientRepository {
     data: updatePatientSwagger,
   ): Promise<Patient> {
     await this.patientRepository.update(id, data);
-    await this.addressRepository.updateAddress(data.address.id, data.address);
+    const getAddress = await this.addressRepository.findAddressByPatientId(id);
+
+    if (!getAddress)
+      await this.addressRepository.updateAddress(data.address.id, data.address);
+
     return this.findPatientById(id);
   }
 
