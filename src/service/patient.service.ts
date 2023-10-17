@@ -105,4 +105,8 @@ export class PatientService {
       day,
     });
   }
+
+  async removePatient(id: string): Promise<void> {
+    await this.patientRepository.deletePatient(id);
+  }
 }
