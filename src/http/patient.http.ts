@@ -17,7 +17,10 @@ import { Roles } from 'src/common/decorators/role.decorator';
 import Consulta from 'src/database/typeorm/Consulta.entities';
 import { LoggedUser } from 'src/common/decorators/user.decorator';
 import Patient from 'src/database/typeorm/Patient.entities';
-import { updateEmailSwagger } from 'src/common/doc/updatePatientSwagger';
+import {
+  updateEmailSwagger,
+  updatePatientSwagger,
+} from 'src/common/doc/updatePatientSwagger';
 
 @ApiTags(Routes.PATIENT)
 @Controller(Routes.PATIENT)
@@ -150,11 +153,24 @@ export class PatientController {
   @ApiOperation({
     summary: 'Atualiza o email do paciente',
   })
-  async updatePatient(
+  async updateEmailPatient(
     @Body() data: updateEmailSwagger,
     @Param('idPatient') idPatient: string,
   ) {
     return this.patientService.updateEmailPatient(idPatient, data);
+  }
+
+  @Put(':idPatient')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.PATIENT)
+  @ApiOperation({
+    summary: 'Atualiza o dados do paciente',
+  })
+  async updatePatient(
+    @Body() data: updatePatientSwagger,
+    @Param('idPatient') idPatient: string,
+  ) {
+    return this.patientService.updatePatient(idPatient, data);
   }
 
   @Delete('/:id')
