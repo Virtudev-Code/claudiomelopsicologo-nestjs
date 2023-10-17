@@ -1,12 +1,14 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
 } from 'class-validator';
 import { Frequency } from '../constant/constants';
+import { createAddressSwagger } from './createAddressSwagger';
 
 export class createPatientSwagger {
   @IsString()
@@ -24,6 +26,22 @@ export class createPatientSwagger {
     example: 'user@email.com',
   })
   email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'Identificador do usuário.',
+    example: '00000000000',
+  })
+  identificador: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'Telefone do usuário.',
+    example: '11999999999',
+  })
+  telefone: string;
 
   @IsString()
   @IsNotEmpty()
@@ -56,4 +74,11 @@ export class createPatientSwagger {
     enum: Frequency,
   })
   frequency: Frequency;
+
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: 'Informações de endereço do paciente.',
+    type: createAddressSwagger,
+  })
+  address: createAddressSwagger;
 }

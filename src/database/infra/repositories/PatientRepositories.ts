@@ -17,6 +17,7 @@ import {
   IRequestMonthPatient,
 } from 'src/common/types/types';
 import { endOfDay, startOfDay } from 'date-fns';
+import { AddressRepository } from './AddressRepositories';
 
 @Injectable()
 export class PatientRepository {
@@ -26,6 +27,7 @@ export class PatientRepository {
     @InjectRepository(Consulta)
     private readonly consultaRepository: Repository<Consulta>,
     private readonly authRepository: AuthRepository,
+    private readonly addressRepository: AddressRepository,
   ) {}
 
   async createPatient(data: createPatientSwagger): Promise<Patient> {
@@ -35,6 +37,8 @@ export class PatientRepository {
 
     patient.name = data.name;
     patient.email = data.email;
+    patient.identificador = data.identificador;
+    patient.telefone = data.telefone;
     patient.refreshToken = '';
     patient.role = Role.PATIENT;
     patient.password = hashPassword;
@@ -42,6 +46,17 @@ export class PatientRepository {
     patient.accepted = true;
 
     const savedPatient = await this.patientRepository.save(patient);
+
+    await this.addressRepository.createAddress({
+      cep: data.address.cep,
+      logradouro: data.address.logradouro,
+      numero: data.address.numero,
+      complemento: data.address.complemento,
+      bairro: data.address.bairro,
+      cidade: data.address.cidade,
+      uf: data.address.uf,
+      patient_id: savedPatient.id,
+    });
 
     const tokens = await this.authRepository.getTokens(
       savedPatient.id,
@@ -62,6 +77,7 @@ export class PatientRepository {
       where: {
         email,
       },
+      relations: ['address'],
     });
   }
 
@@ -70,6 +86,7 @@ export class PatientRepository {
       where: {
         role: Role.PATIENT,
       },
+      relations: ['address'],
     });
   }
 
@@ -87,6 +104,7 @@ export class PatientRepository {
         id,
         role: Role.PATIENT,
       },
+      relations: ['address'],
     });
   }
 
@@ -95,6 +113,7 @@ export class PatientRepository {
     data: updatePatientSwagger,
   ): Promise<Patient> {
     await this.patientRepository.update(id, data);
+    await this.addressRepository.updateAddress(data.address.id, data.address);
     return this.findPatientById(id);
   }
 
@@ -199,5 +218,9 @@ export class PatientRepository {
       },
       relations: ['patient'],
     });
+  }
+
+  async deletePatient(id: string): Promise<void> {
+    await this.patientRepository.delete(id);
   }
 }

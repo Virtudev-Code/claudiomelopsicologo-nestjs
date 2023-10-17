@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Routes } from 'src/common/constant/constants';
 import { PatientService } from 'src/service/patient.service';
@@ -147,5 +155,15 @@ export class PatientController {
     @Param('idPatient') idPatient: string,
   ) {
     return this.patientService.updateEmailPatient(idPatient, data);
+  }
+
+  @Delete('/:id')
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @Roles(Role.PATIENT)
+  @ApiOperation({
+    summary: 'Deleta um paciente',
+  })
+  async deletePatient(@Param('id') id: string) {
+    return this.patientService.removePatient(id);
   }
 }
