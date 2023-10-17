@@ -26,6 +26,22 @@ export class updatePatientSwagger {
   })
   email: string;
 
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'Identificador do usuário.',
+    example: '00000000000',
+  })
+  identificador: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'Telefone do usuário.',
+    example: '11999999999',
+  })
+  telefone: string;
+
   @IsNotEmpty()
   @IsEnum(Frequency)
   frequency: Frequency;
