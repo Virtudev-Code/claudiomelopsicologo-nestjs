@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
+import { Repository, Between, ILike } from 'typeorm';
 import Consulta from 'src/database/typeorm/Consulta.entities';
 import { createConsultaSwagger } from 'src/common/doc/createConsultaSwagger';
 import IConsultaRepository from '../interfaces/IConsultaRepository';
@@ -10,6 +10,7 @@ import { handleError } from 'src/shared/error/handle-error.util';
 import { v4 as uuid } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import {
+  IFilterConsulta,
   IRequestDayPatient,
   IRequestMonth,
   IRequestMonthPatient,
@@ -26,6 +27,48 @@ export class ConsultaRepository implements IConsultaRepository {
     @InjectRepository(Patient)
     private readonly userRepository: Repository<Patient>,
   ) {}
+
+  async findAll(filters: IFilterConsulta): Promise<Consulta[]> {
+    const {
+      patient_name,
+      servicos,
+      convenio,
+      preco,
+      situacaoDoPagamento,
+      estado,
+      startDate,
+      endDate,
+    } = filters;
+
+    // const start = utcToZonedTime(new Date(startDate), saoPauloTimeZone);
+    // const end = utcToZonedTime(new Date(endDate), saoPauloTimeZone);
+
+    // const whereConditions = [];
+
+    // if (startDate && endDate) {
+    //   whereConditions.push({ date: Between(start, end) });
+    // }
+    // if (patient_name) {
+    //   whereConditions.push({ patient_name: ILike(`%${patient_name}%`) });
+    // }
+    // if (servicos) {
+    //   whereConditions.push({ servicos });
+    // }
+    // if (convenio) {
+    //   whereConditions.push({ convenio });
+    // }
+    // if (preco) {
+    //   whereConditions.push({ preco });
+    // }
+    // if (situacaoDoPagamento !== undefined) {
+    //   whereConditions.push({ situacaoDoPagamento });
+    // }
+    // if (estado) {
+    //   whereConditions.push({ estado });
+    // }
+
+    return this.consultaRepository.find();
+  }
 
   public async createConsultas(
     consultasData: createConsultaSwagger[],

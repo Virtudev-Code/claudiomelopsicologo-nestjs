@@ -23,7 +23,7 @@ export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
       autoLoadEntities: false,
       migrationsRun: false,
       migrationsTableName: 'migrations',
-      logging: false,
+      logging: true,
     };
   },
 };

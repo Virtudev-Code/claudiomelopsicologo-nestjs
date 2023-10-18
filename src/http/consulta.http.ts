@@ -10,12 +10,16 @@ import {
   Get,
   UsePipes,
   ValidationPipe,
+  Query,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiConsumes,
   ApiOperation,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { Routes } from 'src/common/constant/constants';
@@ -27,13 +31,20 @@ import { Role } from 'src/common/enum/enum';
 import { parse } from 'date-fns';
 import * as ExcelJS from 'exceljs';
 import { utcToZonedTime } from 'date-fns-tz';
+import { IFilterConsulta } from 'src/common/types/types';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 const saoPauloTimeZone = 'America/Sao_Paulo';
+import { createObjectCsvWriter } from 'csv-writer';
 
 @ApiTags(Routes.CONSULTA)
 @Controller(Routes.CONSULTA)
 @ApiBearerAuth()
 export class ConsultaController {
-  constructor(private readonly consultaService: ConsultaService) {}
+  constructor(
+    private readonly consultaService: ConsultaService,
+    @InjectQueue('consultas') private consultasQueue: Queue,
+  ) {}
 
   //@ApiBody({ type: createConsultaSwagger })
   @UsePipes(ValidationPipe)
@@ -64,14 +75,6 @@ export class ConsultaController {
       let pagamento: any;
       let situacaoDoPagamento: any;
 
-      console.log('====================================');
-      console.log('oq vem aqui row.getCell -->', row.getCell(6).value);
-      console.log('====================================');
-
-      console.log('====================================');
-      console.log('oq vem aqui status-->', row.getCell(6).value === 'Pago');
-      console.log('====================================');
-
       if (row.getCell(6).value === 'Pago') {
         pagamento = true;
         situacaoDoPagamento = true;
@@ -82,9 +85,6 @@ export class ConsultaController {
 
       const dataCellString = dataCellValue.toString();
 
-      console.log('====================================');
-      console.log('data que vem da planilha -->', dataCellString);
-      console.log('====================================');
       const date = parse(
         dataCellString,
         'dd/MM/yyyy',
@@ -102,10 +102,6 @@ export class ConsultaController {
         estado: row.getCell(7).value,
         comentarios: row.getCell(8).value,
       };
-
-      console.log('====================================');
-      console.log('data -->', value);
-      console.log('====================================');
 
       consulta.push(value);
     }
@@ -232,5 +228,54 @@ export class ConsultaController {
       month,
       year,
     });
+  }
+
+  @Get('export')
+  @ApiOperation({ summary: 'Expotar consultar para CSV' })
+  @ApiQuery({ name: 'patient_name', required: false })
+  @ApiQuery({ name: 'servicos', required: false })
+  @ApiQuery({ name: 'convenio', required: false })
+  @ApiQuery({ name: 'preco', required: false })
+  @ApiQuery({ name: 'situacaoDoPagamento', required: false, type: Boolean })
+  @ApiQuery({ name: 'estado', required: false })
+  @ApiQuery({ name: 'startDate', required: false, type: Date })
+  @ApiQuery({ name: 'endDate', required: false, type: Date })
+  async exportCsv(
+    @Query() filters: IFilterConsulta,
+    @Res() response: Response,
+  ) {
+    console.log('====================================');
+    console.log('filters -->', filters);
+    console.log('====================================');
+    // await this.consultasQueue.add('exportAndEmail', {
+    //   filters,
+    // });
+
+    // await this.consultaService.exportToCsv(filters);
+
+    // response.status(202).send('Export and email request has been queued.');
+
+    const consultas = await this.consultaService.exportToCsv(filters);
+
+    const csvWriter = createObjectCsvWriter({
+      path: 'consultas.csv',
+      header: [
+        { id: 'patient_name', title: 'nome paciente' },
+        { id: 'servicos', title: 'servicos' },
+        { id: 'situacaoDoPagamento', title: 'status' },
+        { id: 'date', title: 'data' },
+      ],
+    });
+
+    await csvWriter.writeRecords(
+      consultas.map((data) => ({
+        patient_name: data.patient_name,
+        servicos: data.servicos,
+        situacaoDoPagamento: data.situacaoDoPagamento,
+        date: data.date,
+      })),
+    );
+
+    response.download('consultas.csv');
   }
 }
