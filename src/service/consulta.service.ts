@@ -6,6 +6,7 @@ import {
   IRequestMonth,
   IRequestMonthPatient,
   IRequestDayPatient,
+  IFilterConsulta,
 } from 'src/common/types/types';
 import Patient from 'src/database/typeorm/Patient.entities';
 
@@ -80,5 +81,11 @@ export class ConsultaService {
       year,
       day,
     });
+  }
+
+  async exportToCsv(filters: IFilterConsulta): Promise<Consulta[]> {
+    const consultas = await this.consultaRepository.findAll(filters);
+
+    return consultas;
   }
 }

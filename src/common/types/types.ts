@@ -59,3 +59,14 @@ export type IReset = {
   token: string;
   password: string;
 };
+
+export type IFilterConsulta = {
+  patient_name?: string;
+  servicos?: string;
+  convenio?: string;
+  preco?: string;
+  situacaoDoPagamento?: boolean;
+  estado?: string;
+  startDate?: Date;
+  endDate?: Date;
+};

@@ -19,6 +19,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmFeaturedModule } from 'src/module/typeorm.module';
 import { ConsultaModule } from 'src/module/consulta.module';
 import { PaymentModule } from 'src/module/payment.module';
+import { ConsultasQueueModule } from 'src/module/consultas-queue.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { PaymentModule } from 'src/module/payment.module';
     PaymentModule,
     TypeOrmFeaturedModule,
     ConsultaModule,
+    ConsultasQueueModule,
   ],
   controllers: [AppController],
   providers: [

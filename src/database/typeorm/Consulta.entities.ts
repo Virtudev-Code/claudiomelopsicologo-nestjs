@@ -80,7 +80,7 @@ class Consulta {
 
   constructor() {
     if (!this.id) {
-      this.id = uuid(); // Gera um novo UUID ao criar uma instância de User
+      this.id = uuid();
     }
   }
 }
