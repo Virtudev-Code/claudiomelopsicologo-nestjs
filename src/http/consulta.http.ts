@@ -36,6 +36,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 const saoPauloTimeZone = 'America/Sao_Paulo';
 import { createObjectCsvWriter } from 'csv-writer';
+import { ExcelService } from 'src/service/excel.service';
 
 @ApiTags(Routes.CONSULTA)
 @Controller(Routes.CONSULTA)
@@ -44,6 +45,7 @@ export class ConsultaController {
   constructor(
     private readonly consultaService: ConsultaService,
     @InjectQueue('consultas') private consultasQueue: Queue,
+    private readonly excelService: ExcelService,
   ) {}
 
   //@ApiBody({ type: createConsultaSwagger })
@@ -255,27 +257,31 @@ export class ConsultaController {
 
     // response.status(202).send('Export and email request has been queued.');
 
-    const consultas = await this.consultaService.exportToCsv(filters);
+    const consultas = await this.consultaService.findAll(filters);
+    const filePath = await this.excelService.exportData(consultas);
+    response.download(filePath);
 
-    const csvWriter = createObjectCsvWriter({
-      path: 'consultas.csv',
-      header: [
-        { id: 'patient_name', title: 'nome paciente' },
-        { id: 'servicos', title: 'servicos' },
-        { id: 'situacaoDoPagamento', title: 'status' },
-        { id: 'date', title: 'data' },
-      ],
-    });
+    // const csvWriter = createObjectCsvWriter({
+    //   path: 'consultas.csv',
+    //   header: [
+    //     { id: 'patient_name', title: 'nome paciente' },
+    //     { id: 'servicos', title: 'servicos' },
+    //     { id: 'situacaoDoPagamento', title: 'status' },
+    //     { id: 'date', title: 'data' },
+    //   ],
+    // });
 
-    await csvWriter.writeRecords(
-      consultas.map((data) => ({
-        patient_name: data.patient_name,
-        servicos: data.servicos,
-        situacaoDoPagamento: data.situacaoDoPagamento,
-        date: data.date,
-      })),
-    );
+    // await csvWriter.writeRecords(
+    //   consultas.map((data) => ({
+    //     patient_name: data.patient_name,
+    //     servicos: data.servicos,
+    //     situacaoDoPagamento: data.situacaoDoPagamento,
+    //     date: data.date,
+    //   })),
+    // );
 
-    response.download('consultas.csv');
+    // response.download('consultas.csv');
+
+    return consultas;
   }
 }
