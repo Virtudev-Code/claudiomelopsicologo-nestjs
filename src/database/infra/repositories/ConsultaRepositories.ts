@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between, ILike } from 'typeorm';
+import { Repository, Between } from 'typeorm';
 import Consulta from 'src/database/typeorm/Consulta.entities';
 import { createConsultaSwagger } from 'src/common/doc/createConsultaSwagger';
 import IConsultaRepository from '../interfaces/IConsultaRepository';
@@ -40,36 +40,45 @@ export class ConsultaRepository implements IConsultaRepository {
       endDate,
     } = filters;
 
-    // const start = utcToZonedTime(new Date(startDate), saoPauloTimeZone);
-    // const end = utcToZonedTime(new Date(endDate), saoPauloTimeZone);
+    const saoPauloTimeZone = 'America/Sao_Paulo';
+    const start = utcToZonedTime(
+      startOfDay(new Date(startDate)),
+      saoPauloTimeZone,
+    );
+    const end = utcToZonedTime(endOfDay(new Date(endDate)), saoPauloTimeZone);
 
-    // const whereConditions = [];
+    const query = this.consultaRepository
+      .createQueryBuilder('consulta')
+      .leftJoinAndSelect('consulta.patient', 'patient');
 
-    // if (startDate && endDate) {
-    //   whereConditions.push({ date: Between(start, end) });
-    // }
-    // if (patient_name) {
-    //   whereConditions.push({ patient_name: ILike(`%${patient_name}%`) });
-    // }
-    // if (servicos) {
-    //   whereConditions.push({ servicos });
-    // }
-    // if (convenio) {
-    //   whereConditions.push({ convenio });
-    // }
-    // if (preco) {
-    //   whereConditions.push({ preco });
-    // }
-    // if (situacaoDoPagamento !== undefined) {
-    //   whereConditions.push({ situacaoDoPagamento });
-    // }
-    // if (estado) {
-    //   whereConditions.push({ estado });
-    // }
+    if (startDate && endDate) {
+      query.andWhere('consulta.date BETWEEN :start AND :end', { start, end });
+    }
+    if (patient_name) {
+      query.andWhere('patient.name ILike :patient_name', {
+        patient_name: `%${patient_name}%`,
+      });
+    }
+    if (servicos) {
+      query.andWhere('consulta.servicos = :servicos', { servicos });
+    }
+    if (convenio) {
+      query.andWhere('consulta.convenio = :convenio', { convenio });
+    }
+    if (preco) {
+      query.andWhere('consulta.preco = :preco', { preco });
+    }
+    if (situacaoDoPagamento !== undefined) {
+      query.andWhere('consulta.situacaoDoPagamento = :situacaoDoPagamento', {
+        situacaoDoPagamento,
+      });
+    }
+    if (estado) {
+      query.andWhere('consulta.estado = :estado', { estado });
+    }
 
-    return this.consultaRepository.find();
+    return await query.getMany();
   }
-
   public async createConsultas(
     consultasData: createConsultaSwagger[],
   ): Promise<Consulta[]> {

@@ -83,7 +83,7 @@ export class ConsultaService {
     });
   }
 
-  async exportToCsv(filters: IFilterConsulta): Promise<Consulta[]> {
+  async findAll(filters: IFilterConsulta): Promise<Consulta[]> {
     const consultas = await this.consultaRepository.findAll(filters);
 
     return consultas;

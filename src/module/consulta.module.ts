@@ -5,6 +5,7 @@ import { ConsultaService } from 'src/service/consulta.service';
 import { ConsultaController } from 'src/http/consulta.http';
 import { ConsultasQueueModule } from './consultas-queue.module';
 import { BullModule } from '@nestjs/bull';
+import { ExcelService } from 'src/service/excel.service';
 
 @Module({
   imports: [
@@ -14,8 +15,8 @@ import { BullModule } from '@nestjs/bull';
       name: 'consultas',
     }),
   ],
-  providers: [ConsultaRepository, ConsultaService],
+  providers: [ConsultaRepository, ConsultaService, ExcelService],
   controllers: [ConsultaController],
-  exports: [ConsultaRepository, ConsultaService],
+  exports: [ConsultaRepository, ConsultaService, ExcelService],
 })
 export class ConsultaModule {}

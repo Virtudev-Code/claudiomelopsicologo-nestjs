@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
-import { ConsultasQueueConsumer } from 'src/common/bull/consultas-queue.consumer';
 import { ConsultaService } from 'src/service/consulta.service';
 import { ConsultaRepository } from 'src/database/infra/repositories/ConsultaRepositories';
 import { TypeOrmFeaturedModule } from './typeorm.module';
@@ -12,7 +11,7 @@ import { TypeOrmFeaturedModule } from './typeorm.module';
     }),
     TypeOrmFeaturedModule,
   ],
-  providers: [ConsultasQueueConsumer, ConsultaService, ConsultaRepository],
+  providers: [ConsultaService, ConsultaRepository],
   exports: [ConsultaRepository, ConsultaService],
 })
 export class ConsultasQueueModule {}
