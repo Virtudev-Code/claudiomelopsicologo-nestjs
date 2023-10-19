@@ -35,7 +35,6 @@ import { IFilterConsulta } from 'src/common/types/types';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 const saoPauloTimeZone = 'America/Sao_Paulo';
-import { createObjectCsvWriter } from 'csv-writer';
 import { ExcelService } from 'src/service/excel.service';
 
 @ApiTags(Routes.CONSULTA)
@@ -246,42 +245,8 @@ export class ConsultaController {
     @Query() filters: IFilterConsulta,
     @Res() response: Response,
   ) {
-    console.log('====================================');
-    console.log('filters -->', filters);
-    console.log('====================================');
-    // await this.consultasQueue.add('exportAndEmail', {
-    //   filters,
-    // });
-
-    // await this.consultaService.exportToCsv(filters);
-
-    // response.status(202).send('Export and email request has been queued.');
-
     const consultas = await this.consultaService.findAll(filters);
     const filePath = await this.excelService.exportData(consultas);
     response.download(filePath);
-
-    // const csvWriter = createObjectCsvWriter({
-    //   path: 'consultas.csv',
-    //   header: [
-    //     { id: 'patient_name', title: 'nome paciente' },
-    //     { id: 'servicos', title: 'servicos' },
-    //     { id: 'situacaoDoPagamento', title: 'status' },
-    //     { id: 'date', title: 'data' },
-    //   ],
-    // });
-
-    // await csvWriter.writeRecords(
-    //   consultas.map((data) => ({
-    //     patient_name: data.patient_name,
-    //     servicos: data.servicos,
-    //     situacaoDoPagamento: data.situacaoDoPagamento,
-    //     date: data.date,
-    //   })),
-    // );
-
-    // response.download('consultas.csv');
-
-    return consultas;
   }
 }
