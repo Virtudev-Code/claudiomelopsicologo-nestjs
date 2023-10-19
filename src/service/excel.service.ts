@@ -32,7 +32,7 @@ export class ExcelService {
         servicos: item.servicos && item.servicos,
         convenio: item.convenio && item.convenio,
         preco: item.preco,
-        situacaoDoPagamento: item.situacaoDoPagamento,
+        situacaoDoPagamento: item.situacaoDoPagamento ? 'Pago' : 'Pendente',
         estado: item.estado,
         date: format(utcToZonedTime(item.date, saoPauloTimeZone), 'dd/MM/yyyy'),
       });
