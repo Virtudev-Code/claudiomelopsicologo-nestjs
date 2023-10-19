@@ -6,6 +6,8 @@ git pull origin main
 
 export NODE_OPTIONS=--max-old-space-size=2046
 
+rm -rf yarn.lock
+
 npm install
 
 npm run build
