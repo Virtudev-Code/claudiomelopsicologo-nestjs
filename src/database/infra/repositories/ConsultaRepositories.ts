@@ -113,18 +113,14 @@ export class ConsultaRepository implements IConsultaRepository {
     for (const consultaData of consultasData) {
       const { patient_name, ...consultaInfo } = consultaData;
 
-      const getConsulta = await this.consultaRepository.findOne({
-        where: {
-          patient: {
-            name: patient_name,
-          },
-          convenio: consultaInfo.convenio,
-          servicos: consultaInfo.servicos,
-          date: consultaInfo.data,
-          preco: consultaInfo.preco,
-        },
-        relations: ['patient'],
-      });
+      const getConsulta = await this.consultaRepository
+        .createQueryBuilder('consulta')
+        .leftJoinAndSelect('consulta.patient', 'patient')
+        .where('patient.name = :patient_name', { patient_name })
+        .andWhere('consulta.date = :date', { date: consultaInfo['date'] })
+        .andWhere('consulta.preco = :preco', { preco: consultaInfo.preco })
+
+        .getOne();
 
       if (getConsulta) {
         continue;
@@ -141,9 +137,7 @@ export class ConsultaRepository implements IConsultaRepository {
 
         consulta.patient = user;
         Object.assign(consulta, consultaInfo);
-        console.log('====================================');
-        console.log('Tem usuário -->', consulta);
-        console.log('====================================');
+
         const createdConsulta = await this.consultaRepository.save(consulta);
         delete createdConsulta.patient.accepted;
         delete createdConsulta.patient.is_first_time;
