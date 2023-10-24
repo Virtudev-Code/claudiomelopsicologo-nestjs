@@ -263,7 +263,30 @@ export class PatientRepository {
     });
   }
 
+  async deleteAllConsultas(patient_id: string): Promise<void> {
+    const consultas = await this.consultaRepository.find({
+      where: {
+        patient: {
+          id: patient_id,
+        },
+      },
+    });
+
+    for (const consulta of consultas) {
+      await this.consultaRepository.delete(consulta.id);
+    }
+  }
+
+  async deleteAddress(patient_id: string): Promise<void> {
+    await this.addressRepository.deleteAddress(patient_id);
+  }
+
+  async deleteDependentRecords(patientId: string): Promise<void> {
+    await this.deleteAllConsultas(patientId);
+    await this.deleteAddress(patientId);
+  }
   async deletePatient(id: string): Promise<void> {
+    await this.deleteDependentRecords(id);
     await this.patientRepository.delete(id);
   }
 }

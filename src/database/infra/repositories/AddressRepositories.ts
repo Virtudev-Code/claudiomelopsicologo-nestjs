@@ -42,4 +42,10 @@ export class AddressRepository {
   async updateAddress(id: string, data: createAddressSwagger): Promise<void> {
     await this.addressRepository.update(id, data);
   }
+
+  async deleteAddress(id: string): Promise<void> {
+    await this.addressRepository.delete({
+      patient_id: id,
+    });
+  }
 }

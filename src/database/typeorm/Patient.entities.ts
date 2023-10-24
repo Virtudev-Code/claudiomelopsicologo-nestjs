@@ -54,7 +54,9 @@ class Patient {
   @Column({ nullable: true })
   address_id: string;
 
-  @OneToOne(() => Address, (address) => address.patient)
+  @OneToOne(() => Address, (address) => address.patient, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'address_id' })
   address: Address;
 
