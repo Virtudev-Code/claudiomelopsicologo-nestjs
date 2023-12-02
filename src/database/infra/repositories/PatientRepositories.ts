@@ -114,9 +114,9 @@ export class PatientRepository {
   ): Promise<Patient> {
     const getAddress = await this.addressRepository.findAddressByPatientId(id);
 
-    console.log('====================================');
-    console.log('getAddress', getAddress);
-    console.log('====================================');
+    // console.log('====================================');
+    // console.log('getAddress', getAddress);
+    // console.log('====================================');
 
     if (!getAddress) {
       const addAddress = await this.addressRepository.createAddress({

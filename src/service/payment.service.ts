@@ -6,12 +6,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { ClienteDTO } from 'src/common/doc/paymentBoletoSwagger';
 import { PaymentSwagger } from 'src/common/doc/paymentSwagger';
 import Consulta, { TypePayment } from 'src/database/typeorm/Consulta.entities';
 import Transacao from 'src/database/typeorm/Transacao.entities';
 import { Repository } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class PaymentService {
@@ -22,50 +23,89 @@ export class PaymentService {
     private readonly transactionRepository: Repository<Transacao>,
   ) {}
 
+  private async authenticateWithContself(): Promise<string> {
+    // const loginUser = {
+    //   username: process.env.USER_CONTSELF,
+    //   password: process.env.PASSWORD_CONTSELF,
+    // };
+
+    const loginUser = {
+      username: 'medicoteste@contself.com.br',
+      password: 'med123',
+    };
+
+    try {
+      // const response = await axios.post(
+      //   'https://app.contself.com.br/ApiMobile/Login',
+      //   loginUser,
+      // );
+
+      const response = await axios.post(
+        'http://apphml.contself.com.br/ApiMobile/Login',
+        loginUser,
+      );
+
+      console.log(response.data);
+
+      return response.data.Token;
+    } catch (error) {
+      throw new Error('Erro na autenticação com Contself');
+    }
+  }
+
+  private async sendPaymentRequest(
+    authToken: string,
+    paymentPayload: PaymentSwagger,
+    keyERP: string,
+  ): Promise<AxiosResponse> {
+    const URL_PAYMENT_CONTSELF = `https://app.contself.com.br/ApiEcommerce/SolicitaPagamentoTransparente?ChavePessoa=${process.env.CHAVE_PESSOA}&chaveERP=${keyERP}`;
+    const URL_PAYMENT_CONTSELF_TEST = `http://apphml.contself.com.br/ApiEcommerce/SolicitaPagamentoTransparente?ChavePessoa=f6ed13da-a4e5-4bc0-965e-df2a67d2e59e&chaveERP=${keyERP}`;
+
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Basic ${authToken}`,
+    };
+
+    try {
+      return await axios.post(URL_PAYMENT_CONTSELF_TEST, paymentPayload, {
+        headers,
+      });
+    } catch (error) {
+      const axiosError = error as AxiosError;
+
+      // Aqui você pode acessar propriedades específicas do erro do Axios
+      if (axiosError.response) {
+        // A resposta foi recebida com um status de erro (por exemplo, 4xx, 5xx)
+        console.log('Status:', axiosError.response.status);
+        console.log('Data:', axiosError.response.data);
+        console.log('Headers:', axiosError.response.headers);
+      } else if (axiosError.request) {
+        // A requisição foi feita, mas não houve resposta
+        console.log('Request:', axiosError.request);
+      } else {
+        // Ocorreu um erro durante a solicitação
+        console.error('Error:', axiosError.message);
+      }
+      throw new Error('Erro ao enviar solicitação de pagamento para Contself');
+    }
+  }
+
   async makePayment(
     user_id: string,
     appointment_id: string,
     data: PaymentSwagger,
-  ): Promise<Consulta> {
+  ) {
     const appointment = await this.findAppointmentValidation(
       user_id,
       appointment_id,
     );
 
-    const validatePayment = await this.paymentInquiry(user_id, appointment_id);
-
-    if (validatePayment.descricaoStatusTransacao === 'Concluída') {
-      throw new BadRequestException('Pagamento já concluido');
-    }
-
-    const URL_PAYMENT_CONTSELF = `https://app.contself.com.br/ApiEcommerce/SolicitaPagamentoTransparente?ChavePessoa=${process.env.CHAVE_PESSOA}&chaveERP=${appointment.chaveERP}`;
-
-    let AuthToken: any;
-
-    const LoginUser = {
-      username: process.env.USER_CONTSELF,
-      password: process.env.PASSWORD_CONTSELF,
-    };
-
-    try {
-      const response = await axios.post(
-        'https://app.contself.com.br/ApiMobile/Login',
-        LoginUser,
-      );
-
-      AuthToken = response.data.Token;
-    } catch (error) {
-      throw new error();
-    }
-
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Basic ${AuthToken}`,
-    };
+    const keyERP = uuidv4(); // Gera um UUID para a chave ERP
+    const authToken = await this.authenticateWithContself();
 
     const paymentPayload: PaymentSwagger = {
       urlretorno: data.urlretorno,
-      chaveerp: appointment.chaveERP,
+      chaveerp: keyERP,
       valor: data.valor,
       numeroparcela: data.numeroparcela,
       nome: data.nome,
@@ -95,75 +135,42 @@ export class PaymentService {
     };
 
     try {
-      const response = await axios.post(URL_PAYMENT_CONTSELF, paymentPayload, {
-        headers,
-      });
+      const response = await this.sendPaymentRequest(
+        authToken,
+        paymentPayload,
+        keyERP,
+      );
 
-      if (response.data) {
-        const transacaoData: AxiosResponse = response.data;
+      const transacaoData: AxiosResponse = response.data;
+      console.log(transacaoData);
 
-        try {
-          const validatePayment = await this.paymentInquiry(
-            user_id,
-            appointment_id,
-          );
+      // const transacao = new Transacao();
+      // transacao.infoPayment = transacaoData;
 
-          if (validatePayment.descricaoStatusTransacao === 'Concluída') {
-            const transacao = new Transacao();
-            transacao.infoPayment = transacaoData;
+      // if (!appointment.transacao) {
+      //   transacao.consulta = appointment;
+      // }
 
-            if (!appointment.transacao) {
-              transacao.consulta = appointment;
-            }
+      // await this.transactionRepository.save(transacao);
 
-            await this.transactionRepository.save(transacao);
+      // appointment.type = TypePayment.CARD;
+      // appointment.chaveERP = keyERP;
+      // appointment.situacaoDoPagamento = transacaoData ? true : false;
+      // appointment.transacao = transacao;
 
-            appointment.type = TypePayment.CARD;
-            appointment.situacaoDoPagamento = true;
-            appointment.transacao = transacao;
+      // await this.consultaRepository.save(appointment);
 
-            await this.consultaRepository.save(appointment);
+      // const result = await this.findAppointmentStatus(user_id, appointment_id);
+      // return result;
+    } catch (error) {
+      console.log(error);
 
-            const result = await this.findAppointmentStatus(
-              user_id,
-              appointment_id,
-            );
-
-            return result;
-          } else {
-            const transacao = new Transacao();
-            transacao.infoPayment = transacaoData;
-
-            if (!appointment.transacao) {
-              transacao.consulta = appointment;
-            }
-
-            await this.transactionRepository.save(transacao);
-
-            appointment.type = TypePayment.CARD;
-            appointment.situacaoDoPagamento = false;
-            appointment.transacao = transacao;
-
-            await this.consultaRepository.save(appointment);
-
-            const result = await this.findAppointmentStatus(
-              user_id,
-              appointment_id,
-            );
-
-            return result;
-          }
-        } catch (error) {
-          throw error.message;
-        }
-      }
-    } catch (error: any) {
       throw new HttpException(
         {
           error: 'Erro ao processar pagamento',
           message: error?.response?.data,
         },
-        HttpStatus.INTERNAL_SERVER_ERROR, // Use o código de status HTTP apropriado
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -183,7 +190,7 @@ export class PaymentService {
       throw new BadRequestException('Appointment do not exists');
     }
 
-    const URL_INQUIRY_CONTSELF = `https://app.contself.com.br/ApiEcommerce/ConsultaPagamento?&ChavePessoa=${process.env.CHAVE_PESSOA}&ChaveERP=${findAppointment.chaveERP}`;
+    const URL_INQUIRY_CONTSELF = `https://app.contself.com.br/ApiEcommerce/ConsultaPagamento?ChavePessoa=${process.env.CHAVE_PESSOA}&ChaveERP=${findAppointment?.chaveERP}`;
 
     let AuthToken: any;
 
@@ -209,63 +216,19 @@ export class PaymentService {
         headers,
       });
 
-      const transacaoData: AxiosResponse = response.data;
+      const transacaoData: AxiosResponse = response?.data;
 
       if (transacaoData) {
-        return response.data.descricaoStatusTransacao;
+        return response?.data?.descricaostatustransacao;
       }
     } catch (error) {
-      throw error;
+      if (axios.isAxiosError(error) && error) {
+        console.log('Erro:', error.message);
+      } else {
+        console.error('Erro:', error);
+      }
     }
   }
-
-  // async cancelPay(user_id: string, appointment_id: string) {
-  //   const findAppointment = await this.consultaRepository.findOne({
-  //     where: {
-  //       id: appointment_id,
-  //       patient: {
-  //         id: user_id,
-  //       },
-  //     },
-  //     relations: ['transacao'],
-  //   });
-
-  //   if (!findAppointment) {
-  //     throw new BadRequestException('Appointment do not exists');
-  //   }
-
-  //   const URL_CANCEL_CONTSELF = `http://apphml.contself.com.br/ApiEcommerce/CancelaPagamento?&ChavePessoa=${process.env.CHAVE_PESSOA}&ChaveERP=${findAppointment.chaveERP}`;
-
-  //   const AuthToken = `fKW9LXv8BJBCVFuZvO3q6uh1YV/5NhEjvbUa1kLHj4LqWhZFZhlVFVEZRlk8PRyt`;
-
-  //   const headers = {
-  //     'Content-Type': 'application/json',
-  //     Authorization: `Basic ${AuthToken}`,
-  //   };
-
-  //   try {
-  //     const response = await axios.get(URL_CANCEL_CONTSELF, {
-  //       headers,
-  //     });
-
-  //     const transacaoData: AxiosResponse = response.data;
-
-  //     if (transacaoData) {
-  //       try {
-  //         findAppointment.situacaoDoPagamento = false;
-  //         findAppointment.transacao.cancelPayment = transacaoData;
-
-  //         await this.consultaRepository.save(findAppointment);
-
-  //         return transacaoData;
-  //       } catch (error) {
-  //         throw error;
-  //       }
-  //     }
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
 
   public async findAppointmentValidation(
     user_id: string,
@@ -426,7 +389,7 @@ export class PaymentService {
       throw new BadRequestException('Agendamento não encontrado');
     }
 
-    const URL_FIND_BOLETO_CONTSELF = `http://apphml.contself.com.br/ApiEcommerce/ConsultaBoleto?&ChavePessoa=${process.env.CHAVE_PESSOA}&ChaveERP=${appointment.chaveERP}`;
+    const URL_FIND_BOLETO_CONTSELF = `http://app.contself.com.br/ApiEcommerce/ConsultaBoleto?&ChavePessoa=${process.env.CHAVE_PESSOA}&ChaveERP=${appointment.chaveERP}`;
 
     const AuthToken = `fKW9LXv8BJBCVFuZvO3q6uh1YV/5NhEjvbUa1kLHj4LqWhZFZhlVFVEZRlk8PRyt`;
 
@@ -446,6 +409,60 @@ export class PaymentService {
         return transacaoData;
       }
     } catch (error) {
+      throw error;
+    }
+  }
+
+  public async cancelPayment(user_id: string, appointment_id: string) {
+    const appointment = await this.consultaRepository.findOne({
+      where: {
+        id: appointment_id,
+        patient_name: user_id,
+      },
+    });
+
+    if (!appointment) {
+      throw new BadRequestException('Agendamento não encontrado');
+    }
+
+    let AuthToken: any;
+
+    const LoginUser = {
+      username: process.env.USER_CONTSELF,
+      password: process.env.PASSWORD_CONTSELF,
+    };
+
+    try {
+      const login = await axios.post(
+        'https://app.contself.com.br/ApiMobile/Login',
+        LoginUser,
+      );
+
+      AuthToken = login.data.Token;
+    } catch (error) {
+      throw error;
+    }
+
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Basic ${AuthToken}`,
+    };
+
+    const URL_DELETE_PAYMENT_CONTSELF = `http://apphml.contself.com.br/ApiEcommerce/CancelaPagamento?ChavePessoa=${process.env.CHAVE_PESSOA}&ChaveERP=${appointment?.chaveERP}`;
+
+    try {
+      const response = await axios.get(URL_DELETE_PAYMENT_CONTSELF, {
+        headers,
+      });
+
+      const transacaoData: AxiosResponse = response.data;
+
+      if (transacaoData) {
+        return transacaoData;
+      }
+    } catch (error) {
+      console.log(error);
+
       throw error;
     }
   }

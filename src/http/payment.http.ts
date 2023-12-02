@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -46,6 +47,25 @@ export class PaymentController {
       user.id,
       appointment_id,
       data,
+    );
+
+    return payment;
+  }
+
+  @SkipThrottle(true)
+  @Delete('/cancelPayment/:appointment_id')
+  @Roles(Role.PATIENT)
+  @UseGuards(AccessTokenGuard, RolesGuard)
+  @ApiOperation({
+    summary: 'Cancela pagamentos a Api da Contself',
+  })
+  async cancelPayment(
+    @LoggedUser() user: Patient,
+    @Param('appointment_id') appointment_id: string,
+  ) {
+    const payment = await this.paymentService.cancelPayment(
+      user.id,
+      appointment_id,
     );
 
     return payment;

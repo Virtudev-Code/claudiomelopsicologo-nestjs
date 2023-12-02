@@ -10,9 +10,9 @@ export const LoggedUser = createParamDecorator((_, ctx: ExecutionContext) => {
 
   const user: Patient = request.user;
 
-  console.log('====================================');
-  console.log('oq vem aqui user ', user);
-  console.log('====================================');
+  // console.log('====================================');
+  // console.log('oq vem aqui user ', user);
+  // console.log('====================================');
 
   if (!user) {
     throw new UnauthorizedException('User do not exists!');
