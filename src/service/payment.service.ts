@@ -24,26 +24,26 @@ export class PaymentService {
   ) {}
 
   private async authenticateWithContself(): Promise<string> {
-    // const loginUser = {
-    //   username: process.env.USER_CONTSELF,
-    //   password: process.env.PASSWORD_CONTSELF,
-    // };
-
     const loginUser = {
-      username: 'medicoteste@contself.com.br',
-      password: 'med123',
+      username: process.env.USER_CONTSELF,
+      password: process.env.PASSWORD_CONTSELF,
     };
 
-    try {
-      // const response = await axios.post(
-      //   'https://app.contself.com.br/ApiMobile/Login',
-      //   loginUser,
-      // );
+    // const loginUser = {
+    //   username: 'medicoteste@contself.com.br',
+    //   password: 'med123',
+    // };
 
+    try {
       const response = await axios.post(
-        'http://apphml.contself.com.br/ApiMobile/Login',
+        'https://app.contself.com.br/ApiMobile/Login',
         loginUser,
       );
+
+      // const response = await axios.post(
+      //   'http://apphml.contself.com.br/ApiMobile/Login',
+      //   loginUser,
+      // );
 
       console.log(response.data);
 
@@ -59,7 +59,7 @@ export class PaymentService {
     keyERP: string,
   ): Promise<AxiosResponse> {
     const URL_PAYMENT_CONTSELF = `https://app.contself.com.br/ApiEcommerce/SolicitaPagamentoTransparente?ChavePessoa=${process.env.CHAVE_PESSOA}&chaveERP=${keyERP}`;
-    const URL_PAYMENT_CONTSELF_TEST = `http://apphml.contself.com.br/ApiEcommerce/SolicitaPagamentoTransparente?ChavePessoa=f6ed13da-a4e5-4bc0-965e-df2a67d2e59e&chaveERP=${keyERP}`;
+    //const URL_PAYMENT_CONTSELF_TEST = `http://apphml.contself.com.br/ApiEcommerce/SolicitaPagamentoTransparente?ChavePessoa=f6ed13da-a4e5-4bc0-965e-df2a67d2e59e&chaveERP=${keyERP}`;
 
     const headers = {
       'Content-Type': 'application/json',
@@ -67,23 +67,19 @@ export class PaymentService {
     };
 
     try {
-      return await axios.post(URL_PAYMENT_CONTSELF_TEST, paymentPayload, {
+      return await axios.post(URL_PAYMENT_CONTSELF, paymentPayload, {
         headers,
       });
     } catch (error) {
       const axiosError = error as AxiosError;
 
-      // Aqui você pode acessar propriedades específicas do erro do Axios
       if (axiosError.response) {
-        // A resposta foi recebida com um status de erro (por exemplo, 4xx, 5xx)
         console.log('Status:', axiosError.response.status);
         console.log('Data:', axiosError.response.data);
         console.log('Headers:', axiosError.response.headers);
       } else if (axiosError.request) {
-        // A requisição foi feita, mas não houve resposta
         console.log('Request:', axiosError.request);
       } else {
-        // Ocorreu um erro durante a solicitação
         console.error('Error:', axiosError.message);
       }
       throw new Error('Erro ao enviar solicitação de pagamento para Contself');
@@ -141,27 +137,30 @@ export class PaymentService {
         keyERP,
       );
 
-      const transacaoData: AxiosResponse = response.data;
-      console.log(transacaoData);
+      const transacaoData = response.data;
 
-      // const transacao = new Transacao();
-      // transacao.infoPayment = transacaoData;
+      if (transacaoData?.descricaoStatusTransacao === 'Não aprovada') {
+        throw new BadRequestException('Pagamento não Aprovado');
+      }
 
-      // if (!appointment.transacao) {
-      //   transacao.consulta = appointment;
-      // }
+      const transacao = new Transacao();
+      transacao.infoPayment = transacaoData;
 
-      // await this.transactionRepository.save(transacao);
+      if (!appointment.transacao) {
+        transacao.consulta = appointment;
+      }
 
-      // appointment.type = TypePayment.CARD;
-      // appointment.chaveERP = keyERP;
-      // appointment.situacaoDoPagamento = transacaoData ? true : false;
-      // appointment.transacao = transacao;
+      await this.transactionRepository.save(transacao);
 
-      // await this.consultaRepository.save(appointment);
+      appointment.type = TypePayment.CARD;
+      appointment.chaveERP = keyERP;
+      appointment.situacaoDoPagamento = transacaoData ? true : false;
+      appointment.transacao = transacao;
 
-      // const result = await this.findAppointmentStatus(user_id, appointment_id);
-      // return result;
+      await this.consultaRepository.save(appointment);
+
+      const result = await this.findAppointmentStatus(user_id, appointment_id);
+      return result;
     } catch (error) {
       console.log(error);
 
