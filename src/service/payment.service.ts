@@ -139,28 +139,35 @@ export class PaymentService {
 
       const transacaoData = response.data;
 
-      if (transacaoData?.descricaoStatusTransacao === 'Não aprovada') {
+      if (transacaoData?.descricaoStatusTransacao === 'Concluída') {
+        const transacao = new Transacao();
+        transacao.infoPayment = transacaoData;
+
+        if (!appointment.transacao) {
+          transacao.consulta = appointment;
+        }
+
+        await this.transactionRepository.save(transacao);
+
+        appointment.type = TypePayment.CARD;
+        appointment.chaveERP = keyERP;
+        appointment.situacaoDoPagamento = true;
+        appointment.transacao = transacao;
+
+        await this.consultaRepository.save(appointment);
+
+        const result = await this.findAppointmentStatus(
+          user_id,
+          appointment_id,
+        );
+        return result;
+      } else if (transacaoData?.descricaoStatusTransacao === 'Não aprovada') {
         throw new BadRequestException('Pagamento não Aprovado');
+      } else {
+        throw new BadRequestException(
+          `${transacaoData?.descricaoStatusTransacao}`,
+        );
       }
-
-      const transacao = new Transacao();
-      transacao.infoPayment = transacaoData;
-
-      if (!appointment.transacao) {
-        transacao.consulta = appointment;
-      }
-
-      await this.transactionRepository.save(transacao);
-
-      appointment.type = TypePayment.CARD;
-      appointment.chaveERP = keyERP;
-      appointment.situacaoDoPagamento = transacaoData ? true : false;
-      appointment.transacao = transacao;
-
-      await this.consultaRepository.save(appointment);
-
-      const result = await this.findAppointmentStatus(user_id, appointment_id);
-      return result;
     } catch (error) {
       console.log(error);
 
