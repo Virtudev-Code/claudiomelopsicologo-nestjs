@@ -52,9 +52,13 @@ async function bootstrap() {
     .addTag(Routes.CONSULTA)
     .addBearerAuth()
     .setTitle('API - Financeiro Psicólogo')
-    .setDescription('Website Financeiro Médico')
+    .setDescription('API - Cláudio Financeiro Médico')
     .setTermsOfService('https://www.google.com')
-    .setContact('Artemis', 'https://www.contato.com', 'contato@exemplo.com')
+    .setContact(
+      'API - FINANCEIRO',
+      'https://www.contato.com',
+      'contato@exemplo.com',
+    )
     .setExternalDoc(
       'API - Contself',
       'https://documenter.getpostman.com/view/3026223/Szf9VSL2',

@@ -160,9 +160,9 @@ export class ConsultaRepository implements IConsultaRepository {
         consulta.patient = createdUser;
         Object.assign(consulta, consultaInfo);
 
-        console.log('====================================');
-        console.log('não tem usuário -->', consulta);
-        console.log('====================================');
+        // console.log('====================================');
+        // console.log('não tem usuário -->', consulta);
+        // console.log('====================================');
         const createdConsulta = await this.consultaRepository.save(consulta);
         delete createdConsulta.patient.accepted;
         delete createdConsulta.patient.is_first_time;
